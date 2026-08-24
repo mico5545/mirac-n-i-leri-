@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merhaba Damla</title>
+    <!-- Modern ve şık yazı tipleri -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #090a0f;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: #fff;
+            perspective: 1000px;
+        }
+
+        /* Sabit arka plan yıldızları */
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 8px #fff; }
+        }
+
+        /* Ana Kart */
+        .card {
+            position: relative;
+            z-index: 10;
+            background: rgba(25, 30, 45, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 240, 255, 0.1);
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .card.hide {
+            transform: scale(0.5) translateY(100px) rotateX(45deg);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #00f0ff;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        p.message {
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #b0b8c8;
+        }
+
+        /* Butonlar */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+        }
+
+        .btn-good {
+            background: transparent;
+            border: 2px solid #00f0ff;
+            color: #00f0ff;
+        }
+
+        .btn-super {
+            background: #00f0ff;
+            color: #090a0f;
+            border: 2px solid #00f0ff;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 240, 255, 0.3);
+        }
+
+        /* Yeni Animasyon Efektleri */
+        #magic-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Işıltı Patlaması (Partiküller) */
+        .particle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background: #00f0ff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00f0ff, 0 0 20px #0080ff;
+            opacity: 0;
+        }
+
+        /* Dev İsim */
+        #big-name {
+            font-family: 'Great Vibes', cursive;
+            font-size: 7rem;
+            color: #fff;
+            text-shadow: 0 0 20px #00f0ff, 0 0 40px #0080ff, 0 0 60px #0040ff;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        #big-name.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* İltifat Metni */
+        #final-message {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #e0e7ff;
+            text-align: center;
+            max-width: 80%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease 0.8s;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        #final-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sabit Arka Plan Yıldızları -->
+    <div class="stars" id="stars"></div>
+
+    <!-- Animasyon Konteyneri -->
+    <div id="magic-container">
+        <div id="big-name">Damla</div>
+        <div id="final-message"></div>
+    </div>
+
+    <!-- Ana Kart -->
+    <div class="card" id="main-card">
+        <h1>Merhaba Damla</h1>
+        <p class="message">Ufak bir sürpriz için aşağıdaki butonlardan birine tıkla...</p>
+        
+        <div class="button-group">
+            <button class="btn-good" onclick="triggerMagic(1)">İyi</button>
+            <button class="btn-super" onclick="triggerMagic(2)">Çok İyi</button>
+        </div>
+    </div>
+
+    <script>
+        // İltifatlar güncellendi: Daha ince, dozunda ve sempatik.
+        const messages = {
+            1: "Mavi renginin en çok yakıştığı o güzel gözlere ufak bir selam olsun istedim...",
+            2: "Ekrana bakarken o mavi gözlerin gülümsediyse, bu küçük sürpriz amacına ulaşmış demektir."
+        };
+
+        function triggerMagic(type) {
+            const card = document.getElementById('main-card');
+            const bigName = document.getElementById('big-name');
+            const finalMessage = document.getElementById('final-message');
+            const magicContainer = document.getElementById('magic-container');
+
+            // 1. Kartı şık bir şekilde gizle
+            card.classList.add('hide');
+
+            // 2. Mesajı ayarla
+            finalMessage.textContent = messages[type];
+
+            // 3. Işık / Yıldız tozu patlaması oluştur
+            createExplosion();
+
+            // 4. Yazıları göster
+            setTimeout(() => {
+                bigName.classList.add('show');
+                finalMessage.classList.add('show');
+            }, 600);
+
+            // 5. 8 saniye sonra her şeyi başa sar
+            setTimeout(() => {
+                bigName.classList.remove('show');
+                finalMessage.classList.remove('show');
+                setTimeout(() => {
+                    card.classList.remove('hide');
+                }, 1000);
+            }, 8000);
+        }
+
+        function createExplosion() {
+            const container = document.getElementById('magic-container');
+            const colors = ['#00f0ff', '#0080ff', '#ffffff', '#70a1ff'];
+
+            for (let i = 0; i < 60; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Rastgele renk
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Rastgele fırlama açısı ve mesafesi
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 100 + Math.random() * 250;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                
+                // Animasyonu dinamik olarak ekle
+                particle.animate([
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 1000 + Math.random() * 1000,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                    fill: 'forwards'
+                });
+
+                container.appendChild(particle);
+
+                setTimeout(() => {
+                    particle.remove();
+                }, 2000);
+            }
+        }
+
+        // Arka plandaki sabit minik yıldızları oluşturma
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            const size = Math.random() * 3 + 1;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.animationDelay = `${Math.random() * 3}s`;
+            starsContainer.appendChild(star);
+        }
+    </script>
+</body>
+</html>
