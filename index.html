@@ -24,10 +24,10 @@
             --z-card: 10;
             --z-interactions: 20;
             --z-butterflies: 50;
+            --z-ladybug: 150;     
             --z-shooting-stars: 200;
             --z-toast: 1000;
             --z-lock: 999999;     
-            --z-overlay: 50000;
             --z-loading: 9999999;
         }
 
@@ -49,18 +49,6 @@
         .loader-ring { width: 70px; height: 70px; border: 4px solid rgba(212, 175, 55, 0.1); border-top: 4px solid var(--gold-primary); border-radius: 50%; animation: spinRing 1.5s linear infinite; margin-bottom: 20px; box-shadow: 0 0 20px rgba(212, 175, 55, 0.6); }
         @keyframes spinRing { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .loader-text { color: var(--gold-primary); font-size: 1.1rem; letter-spacing: 3px; font-style: italic; }
-
-        /* Sihri Başlat Ekranı */
-        #start-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 3, 1, 0.95); backdrop-filter: blur(15px);
-            z-index: var(--z-overlay); display: none; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s;
-        }
-        .start-btn {
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(138, 115, 34, 0.4)); border: 2px solid var(--gold-primary);
-            color: var(--gold-light); padding: 18px 40px; font-size: 1.4rem; border-radius: 50px; cursor: pointer; letter-spacing: 2px;
-            box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); animation: pulseStartBtn 2s infinite alternate;
-        }
-        @keyframes pulseStartBtn { 0% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); } 100% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.8); } }
 
         /* Arka Plan */
         .art-background {
@@ -117,38 +105,60 @@
         }
         @keyframes floatLock { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
-        /* YUMUŞAK HATLI, EFEKTLİ VE GEZEN MAVİ YILDIZ */
+        /* Gezen Mavi Yıldız */
         #hidden-blue-star {
-            position: fixed;
-            width: 50px; height: 50px;
-            z-index: var(--z-particles);
-            cursor: pointer;
+            position: fixed; width: 50px; height: 50px; z-index: var(--z-particles); cursor: pointer;
             display: flex; justify-content: center; align-items: center;
             animation: floatStar 16s infinite alternate ease-in-out;
             filter: drop-shadow(0 0 20px var(--blue-primary)) drop-shadow(0 0 40px rgba(0, 240, 255, 0.5));
         }
-
         .blue-star-shape {
-            width: 60%; height: 60%;
-            background: #ffffff; /* Merkezde yoğun beyaz parlama */
-            border-radius: 50%;
+            width: 60%; height: 60%; background: #ffffff; border-radius: 50%;
             box-shadow: 0 0 20px 8px var(--blue-primary), 0 0 40px 15px rgba(0, 240, 255, 0.6);
             animation: softPulse 3s infinite alternate ease-in-out;
         }
+        @keyframes softPulse { 0% { transform: scale(0.8); opacity: 0.7; } 100% { transform: scale(1.2); opacity: 1; } }
+        @keyframes floatStar { 0% { top: 18vh; left: 15vw; } 33% { top: 70vh; left: 75vw; } 66% { top: 25vh; left: 80vw; } 100% { top: 65vh; left: 20vw; } }
 
-        @keyframes softPulse {
-            0% { transform: scale(0.8); opacity: 0.7; filter: blur(1px); }
-            100% { transform: scale(1.2); opacity: 1; filter: blur(0px); }
+        /* DAMLANIN MAKBİLESİ (Daha tatlı uğur böceği ve isim etiketi) */
+       .ladybug-guide {
+            position: fixed; z-index: var(--z-ladybug); cursor: pointer;
+            width: 55px; height: 55px;
+            background-image: url('makbile.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            animation: ladybugFlySlow 16s linear infinite, wiggleLadybug 0.6s infinite alternate ease-in-out;
+        }
+        }
+        .ladybug-icon {
+            font-size: 42px;
+            filter: drop-shadow(0 0 12px rgba(255, 0, 0, 0.8));
+            animation: wiggleLadybug 0.4s infinite alternate ease-in-out;
+        }
+        .ladybug-name {
+            background: rgba(15, 10, 5, 0.85);
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-light);
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+            margin-top: -4px;
+        }
+        @keyframes wiggleLadybug {
+            0% { transform: rotate(-8deg) scale(1); }
+            100% { transform: rotate(8deg) scale(1.1); }
+        }
+        @keyframes ladybugFly {
+            0% { transform: translate3d(-10vw, 80vh, 0); }
+            50% { transform: translate3d(50vw, 20vh, 0); }
+            100% { transform: translate3d(110vw, 60vh, 0); }
         }
 
-        @keyframes floatStar {
-            0% { top: 18vh; left: 15vw; }
-            33% { top: 70vh; left: 75vw; }
-            66% { top: 25vh; left: 80vw; }
-            100% { top: 65vh; left: 20vw; }
-        }
-
-        /* Efektler */
+        /* Kelebekler */
         .butterfly { position: fixed; font-size: 40px; z-index: var(--z-butterflies); cursor: pointer; filter: drop-shadow(0 0 10px rgba(0, 195, 255, 0.8)); animation-fill-mode: forwards; animation-timing-function: linear; }
         @keyframes flyPath1 { 0% { transform: translate3d(0, 110vh, 0) scale(0.8); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate3d(30px, -20vh, 0) scale(1); opacity: 0; } }
         @keyframes flyPath2 { 0% { transform: translate3d(0, 110vh, 0) scale(1); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate3d(-30px, -20vh, 0) scale(0.8); opacity: 0; } }
@@ -180,16 +190,11 @@
         <div class="loader-text">Damla'nın dünyasına bağlanılıyor...</div>
     </div>
 
-    <div id="start-overlay">
-        <button class="start-btn" id="btn-start">Sihri Başlat ✨</button>
-    </div>
-
     <audio id="bg-audio" loop></audio>
 
     <div class="art-background" id="parallax-bg"></div>
     <canvas id="particle-canvas"></canvas>
     
-    <!-- Yumuşak efektli gezen mavi yıldız -->
     <div id="hidden-blue-star"><div class="blue-star-shape"></div></div>
     
     <div id="time-lock">⏳</div>
@@ -225,13 +230,11 @@
                 msg2: "Tarihin en ünlü eserleri altın yaldızlarla işlenmiş olabilir, ama bence o mavi gözlerin hiçbir tabloya sığmayacak kadar güzel..."
             },
             audio: { gunduz: "1.mp3", gece: "2.mp3" },
-            timings: { butterflySpawnRate: 1800, shootingStarRate: 10000, typewriterSpeed: 45 }
+            timings: { butterflySpawnRate: 1500, shootingStarRate: 10000, typewriterSpeed: 45 }
         };
 
         const els = {
             loading: document.getElementById('loading-screen'),
-            startOverlay: document.getElementById('start-overlay'),
-            btnStart: document.getElementById('btn-start'),
             audio: document.getElementById('bg-audio'),
             cardWrap: document.getElementById('main-card'),
             bg: document.getElementById('parallax-bg'),
@@ -249,6 +252,8 @@
         let isAppActive = false;
         let starCatchCount = 0;
         let magicStarted = false;
+        let butterflyCatchCount = 0; 
+        let ladybugClicked = false; // Uğur böceğine sadece bir kez tıklanabilsin diye
 
         window.addEventListener('load', () => {
             setMusicByTime();
@@ -256,7 +261,11 @@
                 els.loading.style.opacity = '0';
                 setTimeout(() => {
                     els.loading.style.display = 'none';
-                    els.startOverlay.style.display = 'flex';
+                    magicStarted = true; // Kelebekler hemen gelmeye başlar
+                    initCanvasParticles();
+                    
+                    // Sayfa açılır açılmaz Damlanın Makbilesi (Uğur Böceği) yola çıkıyor
+                    spawnLadybug();
                 }, 800);
             }, 1500);
         });
@@ -267,15 +276,45 @@
             els.audio.load();
         }
 
-        els.btnStart.addEventListener('click', async () => {
-            els.audio.play().catch(e => console.log("Ses hatası:", e));
-            els.startOverlay.style.opacity = '0';
-            setTimeout(() => {
-                els.startOverlay.style.display = 'none';
-                magicStarted = true;
-                initCanvasParticles();
-            }, 500);
-        });
+        /* "Damlanın Makbilesi" adında tatlı uğur böceği üretici (Sadece 1 kez gelir) */
+        function spawnLadybug() {
+            if (ladybugClicked) return;
+
+            const ladybug = document.createElement('div');
+            ladybug.className = 'ladybug-guide';
+            ladybug.innerHTML = `
+                <div class="ladybug-icon">🐞</div>
+                <div class="ladybug-name"></div>
+            `;
+            
+            // Rastgele dikey konumdan süzülsün
+            ladybug.style.top = (Math.random() * 60 + 20) + 'vh';
+
+            ladybug.addEventListener('pointerdown', (e) => {
+                e.preventDefault(); e.stopPropagation();
+                if (ladybugClicked) return;
+                ladybugClicked = true;
+
+                // Müziği coştur
+                els.audio.play().catch(e => console.log("Ses hatası:", e));
+                
+                let rect = ladybug.getBoundingClientRect();
+                explodeSpecialEffect(rect.left + rect.width/2, rect.top + rect.height/2);
+                
+                showBigNotification('🐞✨', "Damlanın Makbilesi'ni buldun! Sihirli dünya ve müzik senin için başladı...", 6500);
+                ladybug.remove();
+            });
+
+            document.body.appendChild(ladybug);
+            
+            // Animasyon bittiğinde tıklanmadıysa temizle ve tekrar gönder
+            setTimeout(() => { 
+                if (document.body.contains(ladybug) && !ladybugClicked) {
+                    ladybug.remove();
+                    setTimeout(spawnLadybug, 4000); // Kısa bir süre sonra tekrar şans ver
+                }
+            }, 8000);
+        }
 
         document.addEventListener('mousemove', (e) => {
             if (!magicStarted) return;
@@ -308,7 +347,6 @@
             else showBigNotification('⏳', "Güneşin batmasını bekle, asıl sürpriz akşam 7'den sonra başlıyor...", 6000);
         });
 
-        /* Gezen mavi yıldıza tıklandığında */
         els.blueStar.addEventListener('pointerdown', (e) => {
             e.stopPropagation(); 
             const rect = els.blueStar.getBoundingClientRect();
@@ -318,7 +356,7 @@
         });
 
         function onPointerDown(e) {
-            if(e.target.closest('button') || e.target.classList.contains('butterfly') || e.target.closest('#center-modal') || !magicStarted) return;
+            if(e.target.closest('button') || e.target.classList.contains('butterfly') || e.target.closest('.ladybug-guide') || e.target.closest('#center-modal') || !magicStarted) return;
             let x = e.clientX || (e.touches && e.touches[0].clientX); 
             let y = e.clientY || (e.touches && e.touches[0].clientY);
             spawnRipple(x, y);
@@ -345,16 +383,28 @@
             document.body.appendChild(star); setTimeout(() => { if (document.body.contains(star)) star.remove(); }, 6000);
         }, CONFIG.timings.shootingStarRate);
 
+        /* Sayfa açıldığı andan itibaren kelebekler hemen uçuşmaya başlar */
         setInterval(() => {
             if (isAppActive || !magicStarted) return;
             const b = document.createElement('div'); b.innerHTML = '🦋'; b.className = 'butterfly';
             b.style.left = (Math.random() * 80 + 10) + 'vw'; const duration = Math.random() * 3 + 4; b.style.animationDuration = duration + 's';
             b.style.animationName = Math.random() > 0.5 ? 'flyPath1' : 'flyPath2';
+            
             b.addEventListener('pointerdown', (e) => {
                 e.preventDefault(); e.stopPropagation(); b.remove(); 
-                let x = e.clientX || (e.touches && e.touches[0].clientX); let y = e.clientY || (e.touches && e.touches[0].clientY);
-                explodeHearts(x, y, false); 
+                let x = e.clientX || (e.touches && e.touches[0].clientX); 
+                let y = e.clientY || (e.touches && e.touches[0].clientY);
+                
+                butterflyCatchCount++; 
+                
+                if (butterflyCatchCount % 6 === 0) {
+                    explodeSpecialEffect(x, y);
+                    showBigNotification('🌟', `Tebrikler! ${butterflyCatchCount}. kelebeği yakaladın. Özel bir yıldız yağmuru kilidini açtın!`, 7000);
+                } else {
+                    explodeHearts(x, y, false); 
+                }
             });
+
             document.body.appendChild(b); setTimeout(() => { if (document.body.contains(b)) b.remove(); }, duration * 1000);
         }, CONFIG.timings.butterflySpawnRate);
 
@@ -367,6 +417,23 @@
                 const angle = Math.random() * Math.PI * 2, velocity = Math.random() * 120 + 80;
                 p.style.setProperty('--tx', `${Math.cos(angle) * velocity}px`); p.style.setProperty('--ty', `${Math.sin(angle) * velocity}px`); p.style.setProperty('--rot', `${(Math.random() - 0.5) * 360}deg`);
                 document.body.appendChild(p); setTimeout(() => { if(document.body.contains(p)) p.remove(); }, 800);
+            }
+        }
+
+        function explodeSpecialEffect(x, y) {
+            const specialEmojis = ['🌹', '💎', '👑', '✨', '🔥', '💫'];
+            for(let i = 0; i < 18; i++) {
+                const p = document.createElement('div'); 
+                p.innerHTML = specialEmojis[Math.floor(Math.random() * specialEmojis.length)]; 
+                p.className = 'heart-particle';
+                p.style.fontSize = '32px';
+                p.style.left = x + 'px'; p.style.top = y + 'px';
+                const angle = Math.random() * Math.PI * 2, velocity = Math.random() * 180 + 100;
+                p.style.setProperty('--tx', `${Math.cos(angle) * velocity}px`); 
+                p.style.setProperty('--ty', `${Math.sin(angle) * velocity}px`); 
+                p.style.setProperty('--rot', `${(Math.random() - 0.5) * 720}deg`);
+                document.body.appendChild(p); 
+                setTimeout(() => { if(document.body.contains(p)) p.remove(); }, 1000);
             }
         }
 
