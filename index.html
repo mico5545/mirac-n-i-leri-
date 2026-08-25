@@ -24,10 +24,11 @@
             --z-card: 10;
             --z-interactions: 20;
             --z-butterflies: 50;
-            --z-ladybug: 150;     
+            --z-ladybug: 9999;     /* Kesinlikle en üstte görünmesi için */
             --z-shooting-stars: 200;
             --z-toast: 1000;
             --z-lock: 999999;     
+            --z-overlay: 50000;
             --z-loading: 9999999;
         }
 
@@ -118,24 +119,18 @@
             animation: softPulse 3s infinite alternate ease-in-out;
         }
         @keyframes softPulse { 0% { transform: scale(0.8); opacity: 0.7; } 100% { transform: scale(1.2); opacity: 1; } }
-        @keyframes floatStar { 0% { top: 18vh; left: 15vw; } 33% { top: 70vh; left: 75vw; } 66% { top: 25vh; left: 80vw; } 100% { top: 65vh; left: 20vw; } }
+        @keyframes floatStar { 0% { top: 18vh; left: 15vw; } 33% { top: 70vh; left: 75vw; } 66% { top: 25vh; left: 80vw; } 100% { top: 65vh; left: 15vw; } }
 
-        /* DAMLANIN MAKBİLESİ - Sadece Ortadaki Butonların Bulunduğu Dikey Eksende Aşağı Yukarı Gezinen Rota */
+        /* DAMLANIN MAKBİLESİ - JavaScript ile Kartın Üzerinde Yumuşakça Süzülen Tasarım */
         .ladybug-guide {
             position: fixed; z-index: var(--z-ladybug); cursor: pointer;
             width: 50px; height: 50px;
-            left: 50%; /* Tam dikey orta eksen */
-            transform: translateX(-50%);
             background-image: url('makbile.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            filter: drop-shadow(0 0 10px rgba(255, 60, 60, 0.8));
-            animation: ladybugVerticalAxis 5s ease-in-out infinite alternate;
-        }
-        @keyframes ladybugVerticalAxis {
-            0% { top: 20vh; }   /* Kartın hemen üstünden başlar */
-            100% { top: 72vh; } /* Kartın hemen altına kadar inip geri çıkar */
+            filter: drop-shadow(0 0 12px rgba(255, 60, 60, 0.9));
+            transition: transform 0.1s linear;
         }
 
         /* Kelebekler */
@@ -244,7 +239,7 @@
                     magicStarted = true; 
                     initCanvasParticles();
                     
-                    // Damlanın Makbilesi dikey eksende süzülmeye başlıyor
+                    // Damlanın Makbilesi artık tam butonların ekseninde nazikçe geziniyor
                     spawnLadybug();
                 }, 800);
             }, 1500);
@@ -256,12 +251,41 @@
             els.audio.load();
         }
 
-        /* "Damlanın Makbilesi" - Tam dikey orta eksende aşağı yukarı salınan yapı */
+        /* "Damlanın Makbilesi" - JS tabanlı dinamik dikey eksen hareketi (Mobilde %100 görünür) */
         function spawnLadybug() {
             if (ladybugClicked) return;
 
             const ladybug = document.createElement('div');
             ladybug.className = 'ladybug-guide';
+            document.body.appendChild(ladybug);
+
+            const cardRect = els.cardWrap.getBoundingClientRect();
+            
+            // Başlangıç ve bitiş pozisyonları (Kartın tam dikey hizasında, üstü ve altı arasında)
+            let startY = cardRect.top - 60;
+            let endY = cardRect.bottom + 20;
+            let posX = cardRect.left + (cardRect.width / 2) - 25; // Tam ortası
+
+            let currentY = startY;
+            let direction = 1; // 1: Aşağı, -1: Yukarı
+            let speed = 1.2;   // Çok yavaş ve nazik hız
+
+            function animateLadybug() {
+                if (ladybugClicked || !document.body.contains(ladybug)) return;
+
+                currentY += speed * direction;
+                
+                // Sınırata ulaştığında yön değiştir
+                if (currentY >= endY || currentY <= startY) {
+                    direction *= -1;
+                }
+
+                ladybug.style.left = posX + 'px';
+                ladybug.style.top = currentY + 'px';
+
+                requestAnimationFrame(animateLadybug);
+            }
+            animateLadybug();
 
             ladybug.addEventListener('pointerdown', (e) => {
                 e.preventDefault(); e.stopPropagation();
@@ -277,8 +301,6 @@
                 showBigNotification('🐞✨', "Damlanın Makbilesi'ni buldun! Sihirli dünya ve müzik senin için başladı...", 6500);
                 ladybug.remove();
             });
-
-            document.body.appendChild(ladybug);
         }
 
         document.addEventListener('mousemove', (e) => {
