@@ -120,31 +120,22 @@
         @keyframes softPulse { 0% { transform: scale(0.8); opacity: 0.7; } 100% { transform: scale(1.2); opacity: 1; } }
         @keyframes floatStar { 0% { top: 18vh; left: 15vw; } 33% { top: 70vh; left: 75vw; } 66% { top: 25vh; left: 80vw; } 100% { top: 65vh; left: 20vw; } }
 
-        /* DAMLANIN MAKBİLESİ - Mobilde Ekranın İçinde Gezinen Optimize Edilmiş Rota */
+        /* DAMLANIN MAKBİLESİ - Sadece Ortadaki Butonların Bulunduğu Dikey Eksende Aşağı Yukarı Gezinen Rota */
         .ladybug-guide {
             position: fixed; z-index: var(--z-ladybug); cursor: pointer;
             width: 50px; height: 50px;
+            left: 50%; /* Tam dikey orta eksen */
+            transform: translateX(-50%);
             background-image: url('makbile.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             filter: drop-shadow(0 0 10px rgba(255, 60, 60, 0.8));
-            animation-fill-mode: forwards;
-            animation-timing-function: linear;
+            animation: ladybugVerticalAxis 5s ease-in-out infinite alternate;
         }
-        @keyframes ladybugPathMobile1 {
-            0% { transform: translate3d(-10vw, 80vh, 0) scale(0.8); opacity: 0; }
-            20% { opacity: 1; }
-            50% { transform: translate3d(45vw, 40vh, 0) scale(1.1) rotate(10deg); }
-            80% { opacity: 1; }
-            100% { transform: translate3d(100vw, 30vh, 0) scale(1); opacity: 0; }
-        }
-        @keyframes ladybugPathMobile2 {
-            0% { transform: translate3d(100vw, 70vh, 0) scale(1); opacity: 0; }
-            20% { opacity: 1; }
-            50% { transform: translate3d(35vw, 50vh, 0) scale(0.9) rotate(-10deg); }
-            80% { opacity: 1; }
-            100% { transform: translate3d(-10vw, 25vh, 0) scale(1.1); opacity: 0; }
+        @keyframes ladybugVerticalAxis {
+            0% { top: 20vh; }   /* Kartın hemen üstünden başlar */
+            100% { top: 72vh; } /* Kartın hemen altına kadar inip geri çıkar */
         }
 
         /* Kelebekler */
@@ -253,7 +244,7 @@
                     magicStarted = true; 
                     initCanvasParticles();
                     
-                    // Damlanın Makbilesi mobila özel rotayla yola çıkıyor
+                    // Damlanın Makbilesi dikey eksende süzülmeye başlıyor
                     spawnLadybug();
                 }, 800);
             }, 1500);
@@ -265,16 +256,12 @@
             els.audio.load();
         }
 
-        /* "Damlanın Makbilesi" - Mobil Uyumlu ve Görünür Rota */
+        /* "Damlanın Makbilesi" - Tam dikey orta eksende aşağı yukarı salınan yapı */
         function spawnLadybug() {
             if (ladybugClicked) return;
 
             const ladybug = document.createElement('div');
             ladybug.className = 'ladybug-guide';
-            ladybug.style.animationName = Math.random() > 0.5 ? 'ladybugPathMobile1' : 'ladybugPathMobile2';
-            ladybug.style.animationDuration = '18s'; // Nazik ve rahat yakalanabilir hız
-
-            ladybug.style.top = (Math.random() * 40 + 30) + 'vh'; // Ekranın ortalarında gezinsin
 
             ladybug.addEventListener('pointerdown', (e) => {
                 e.preventDefault(); e.stopPropagation();
@@ -292,13 +279,6 @@
             });
 
             document.body.appendChild(ladybug);
-            
-            setTimeout(() => { 
-                if (document.body.contains(ladybug) && !ladybugClicked) {
-                    ladybug.remove();
-                    setTimeout(spawnLadybug, 4000); 
-                }
-            }, 18000);
         }
 
         document.addEventListener('mousemove', (e) => {
@@ -417,7 +397,7 @@
                 p.style.setProperty('--ty', `${Math.sin(angle) * velocity}px`); 
                 p.style.setProperty('--rot', `${(Math.random() - 0.5) * 720}deg`);
                 document.body.appendChild(p); 
-                setTimeout(() => { if(v.contains(p)) p.remove(); }, 1000);
+                setTimeout(() => { if(document.body.contains(p)) p.remove(); }, 1000);
             }
         }
 
