@@ -14,11 +14,10 @@
             --gold-light: #f9f1cc;
             --blue-primary: #00f0ff;
             --bg-dark: #050301;
-            --glass-bg: rgba(15, 10, 5, 0.65);
+            --glass-bg: rgba(15, 10, 5, 0.7);
             --glass-border: rgba(212, 175, 55, 0.4);
             --text-light: #fdf5e6;
             
-            /* Kesin Çözümlü Z-Index Katmanları */
             --z-bg: 0;
             --z-canvas: 1;
             --z-particles: 5;
@@ -27,9 +26,9 @@
             --z-butterflies: 50;
             --z-shooting-stars: 200;
             --z-toast: 1000;
-            --z-lock: 9000;       /* Kilidin her zaman üstte görünmesi için */
+            --z-lock: 999999;     
             --z-overlay: 50000;
-            --z-loading: 99999;
+            --z-loading: 9999999;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Playfair Display', serif; -webkit-tap-highlight-color: transparent; }
@@ -39,14 +38,13 @@
             height: 100vh; width: 100vw;
             display: flex; justify-content: center; align-items: center;
             overflow: hidden; color: #fff;
-            perspective: 1200px;
             touch-action: none; user-select: none; -webkit-user-select: none;
         }
 
         /* Yükleme Ekranı */
         #loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg-dark); z-index: var(--z-loading);
-            display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1s ease-in-out;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s ease-in-out;
         }
         .loader-ring { width: 70px; height: 70px; border: 4px solid rgba(212, 175, 55, 0.1); border-top: 4px solid var(--gold-primary); border-radius: 50%; animation: spinRing 1.5s linear infinite; margin-bottom: 20px; box-shadow: 0 0 20px rgba(212, 175, 55, 0.6); }
         @keyframes spinRing { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -54,36 +52,34 @@
 
         /* Sihri Başlat Ekranı */
         #start-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 3, 1, 0.92); backdrop-filter: blur(15px);
-            z-index: var(--z-overlay); display: none; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1s;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 3, 1, 0.95); backdrop-filter: blur(15px);
+            z-index: var(--z-overlay); display: none; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.8s;
         }
         .start-btn {
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(138, 115, 34, 0.4)); border: 2px solid var(--gold-primary);
-            color: var(--gold-light); padding: 18px 35px; font-size: 1.3rem; border-radius: 50px; cursor: pointer; letter-spacing: 2px;
+            color: var(--gold-light); padding: 18px 40px; font-size: 1.4rem; border-radius: 50px; cursor: pointer; letter-spacing: 2px;
             box-shadow: 0 0 30px rgba(212, 175, 55, 0.4); animation: pulseStartBtn 2s infinite alternate;
         }
         @keyframes pulseStartBtn { 0% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); } 100% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.8); } }
 
-        /* Responsive Arka Plan */
+        /* Arka Plan */
         .art-background {
-            position: absolute; top: -15%; left: -15%; width: 130%; height: 130%;
-            background: linear-gradient(rgba(20, 10, 0, 0.2), rgba(30, 15, 0, 0.4)), url('https://upload.wikimedia.org/wikipedia/commons/4/40/The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg');
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(20, 10, 0, 0.25), rgba(30, 15, 0, 0.45)), url('https://upload.wikimedia.org/wikipedia/commons/4/40/The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg');
             background-size: cover; background-position: center; z-index: var(--z-bg);
-            will-change: transform;
         }
         #particle-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: var(--z-canvas); pointer-events: none; }
 
         /* Responsive Kart Tasarımı */
         .card-wrapper {
-            position: relative; z-index: var(--z-card); perspective: 1200px;
+            position: relative; z-index: var(--z-card);
             width: 90vw; max-width: 400px; display: flex; justify-content: center; align-items: center;
-            will-change: transform;
         }
         .card {
             background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: 1px solid var(--glass-border); padding: 40px 25px; border-radius: 20px; text-align: center;
-            width: 100%; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.15);
-            transition: opacity 0.6s, transform 0.6s; transform-style: preserve-3d;
+            width: 100%; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 175, 55, 0.15);
+            transition: opacity 0.6s, transform 0.6s;
         }
         .card-wrapper.hide .card { opacity: 0; transform: scale(0.5) translateY(100px); pointer-events: none; }
         .card h1 { font-size: 28px; margin-bottom: 12px; color: var(--gold-primary); font-weight: 700; letter-spacing: 2px; text-shadow: 0 2px 10px rgba(212, 175, 55, 0.6); }
@@ -98,7 +94,7 @@
 
         /* Merkezî Bildirim (Modal) */
         #center-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
             z-index: var(--z-toast); display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: 0.3s;
         }
         #center-modal.active { opacity: 1; visibility: visible; }
@@ -111,18 +107,46 @@
         .modal-text { color: var(--text-light); font-size: 1.2rem; line-height: 1.5; margin-bottom: 25px; font-style: italic; }
         .modal-btn { background: var(--gold-primary); color: #000; border: none; padding: 10px 30px; font-size: 1rem; font-weight: bold; border-radius: 25px; cursor: pointer; }
 
-        /* KESİN ÇÖZÜMLÜ ZAMAN KİLİDİ (Artık Kesinlikle Gözükecek) */
+        /* Zaman Kilidi */
         #time-lock {
-            position: fixed; bottom: 25px; right: 25px; font-size: 38px;
+            position: fixed; bottom: 30px; right: 30px; font-size: 42px;
             cursor: pointer; z-index: var(--z-lock);
-            filter: drop-shadow(0 0 15px var(--gold-primary));
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.8));
             animation: floatLock 3s infinite ease-in-out;
+            padding: 10px;
         }
-        @keyframes floatLock { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        @keyframes floatLock { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
-        /* Gizli Mavi Kutup Yıldızı */
-        #hidden-blue-star { position: fixed; top: 15%; left: 12%; width: 40px; height: 40px; z-index: var(--z-particles); cursor: pointer; display: flex; justify-content: center; align-items: center; }
-        .blue-star-shape { width: 100%; height: 100%; background: var(--blue-primary); clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); box-shadow: 0 0 20px var(--blue-primary); }
+        /* YUMUŞAK HATLI, EFEKTLİ VE GEZEN MAVİ YILDIZ */
+        #hidden-blue-star {
+            position: fixed;
+            width: 50px; height: 50px;
+            z-index: var(--z-particles);
+            cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            animation: floatStar 16s infinite alternate ease-in-out;
+            filter: drop-shadow(0 0 20px var(--blue-primary)) drop-shadow(0 0 40px rgba(0, 240, 255, 0.5));
+        }
+
+        .blue-star-shape {
+            width: 60%; height: 60%;
+            background: #ffffff; /* Merkezde yoğun beyaz parlama */
+            border-radius: 50%;
+            box-shadow: 0 0 20px 8px var(--blue-primary), 0 0 40px 15px rgba(0, 240, 255, 0.6);
+            animation: softPulse 3s infinite alternate ease-in-out;
+        }
+
+        @keyframes softPulse {
+            0% { transform: scale(0.8); opacity: 0.7; filter: blur(1px); }
+            100% { transform: scale(1.2); opacity: 1; filter: blur(0px); }
+        }
+
+        @keyframes floatStar {
+            0% { top: 18vh; left: 15vw; }
+            33% { top: 70vh; left: 75vw; }
+            66% { top: 25vh; left: 80vw; }
+            100% { top: 65vh; left: 20vw; }
+        }
 
         /* Efektler */
         .butterfly { position: fixed; font-size: 40px; z-index: var(--z-butterflies); cursor: pointer; filter: drop-shadow(0 0 10px rgba(0, 195, 255, 0.8)); animation-fill-mode: forwards; animation-timing-function: linear; }
@@ -165,9 +189,9 @@
     <div class="art-background" id="parallax-bg"></div>
     <canvas id="particle-canvas"></canvas>
     
+    <!-- Yumuşak efektli gezen mavi yıldız -->
     <div id="hidden-blue-star"><div class="blue-star-shape"></div></div>
     
-    <!-- KİLİT ARTIK KESİNLİKLE EN ÜSTTE VE GÖZÜKÜR DURUMDA -->
     <div id="time-lock">⏳</div>
 
     <div id="magic-text-container">
@@ -245,16 +269,6 @@
 
         els.btnStart.addEventListener('click', async () => {
             els.audio.play().catch(e => console.log("Ses hatası:", e));
-            
-            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-                try {
-                    const permission = await DeviceOrientationEvent.requestPermission();
-                    if (permission === 'granted') window.addEventListener('deviceorientation', handleOrientation);
-                } catch (error) { console.error(error); }
-            } else {
-                window.addEventListener('deviceorientation', handleOrientation);
-            }
-            
             els.startOverlay.style.opacity = '0';
             setTimeout(() => {
                 els.startOverlay.style.display = 'none';
@@ -263,26 +277,12 @@
             }, 500);
         });
 
-        /* Özenle Optimize Edilmiş Akıcı Jiroskop Motoru */
-        let lastX = 0, lastY = 0;
-        function handleOrientation(e) {
-            if (!e.gamma || !e.beta) return;
-            // Ani titremeleri önlemek için yumuşatma (lerp) filtresi uygulandı
-            const targetX = Math.min(Math.max(e.gamma, -20), 20);
-            const targetY = Math.min(Math.max(e.beta - 45, -20), 20);
-            
-            lastX += (targetX - lastX) * 0.2;
-            lastY += (targetY - lastY) * 0.2;
-            
-            els.bg.style.transform = `translate3d(${lastX * 1.2}px, ${lastY * 1.2}px, 0) scale(1.15)`;
-            els.cardWrap.style.transform = `translate3d(${-lastX * 0.6}px, ${-lastY * 0.6}px, 0) rotateY(${lastX * 0.4}deg) rotateX(${-lastY * 0.4}deg)`;
-        }
-
         document.addEventListener('mousemove', (e) => {
-            const moveX = (window.innerWidth / 2 - e.pageX) / 50;
-            const moveY = (window.innerHeight / 2 - e.pageY) / 50;
-            els.bg.style.transform = `translate3d(${-moveX}px, ${-moveY}px, 0) scale(1.15)`;
-            els.cardWrap.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotateY(${moveX * 0.5}deg) rotateX(${-moveY * 0.5}deg)`;
+            if (!magicStarted) return;
+            const moveX = (window.innerWidth / 2 - e.pageX) / 60;
+            const moveY = (window.innerHeight / 2 - e.pageY) / 60;
+            els.bg.style.transform = `translate3d(${-moveX}px, ${-moveY}px, 0) scale(1.05)`;
+            els.cardWrap.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`;
         });
 
         let autoCloseModalTimer;
@@ -308,9 +308,12 @@
             else showBigNotification('⏳', "Güneşin batmasını bekle, asıl sürpriz akşam 7'den sonra başlıyor...", 6000);
         });
 
+        /* Gezen mavi yıldıza tıklandığında */
         els.blueStar.addEventListener('pointerdown', (e) => {
-            e.stopPropagation(); els.blueStar.style.display = 'none';
-            explodeHearts(e.clientX, e.clientY, false);
+            e.stopPropagation(); 
+            const rect = els.blueStar.getBoundingClientRect();
+            explodeHearts(rect.left + rect.width/2, rect.top + rect.height/2, false);
+            els.blueStar.style.display = 'none';
             showBigNotification('💙', "Milyonlarca yıldız arasında sadece biri maviydi... Tıpkı o gözler gibi.", 8000);
         });
 
@@ -404,7 +407,7 @@
                 draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(212, 175, 55, ${this.baseAlpha})`; ctx.fill(); }
             }
 
-            for (let i = 0; i < 60; i++) particles.push(new ConstellationParticle());
+            for (let i = 0; i < 50; i++) particles.push(new ConstellationParticle());
 
             let mouse = { x: null, y: null };
             window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; }); window.addEventListener('mouseout', () => { mouse.x = null; mouse.y = null; });
