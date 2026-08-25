@@ -2,360 +2,1195 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Merhaba Damla</title>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <!-- Cihazlarda yakınlaştırmayı ve kaydırmayı engellemek için strict viewport ayarı -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#050301">
+    <title>Damla İçin Eşsiz Bir Şaheser</title>
+    
+    <!-- Sanatsal yazı tipleri (Playfair Display ve Great Vibes) -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Playfair Display', serif; }
+        /* ==========================================================================
+           BÖLÜM 1: MERKEZİ TASARIM SİSTEMİ (CSS DEĞİŞKENLERİ)
+           Renk paletleri, z-index hiyerarşisi ve temel metrikler buradan yönetilir.
+           ========================================================================== */
+        :root {
+            /* Renk Paleti */
+            --gold-primary: #d4af37;
+            --gold-light: #f9f1cc;
+            --gold-dark: #8a7322;
+            --gold-glow: rgba(212, 175, 55, 0.6);
+            --blue-primary: #00f0ff;
+            --blue-glow: rgba(0, 240, 255, 0.6);
+            --bg-dark: #050301;
+            --glass-bg: rgba(15, 10, 5, 0.55);
+            --glass-border: rgba(212, 175, 55, 0.3);
+            --text-light: #fdf5e6;
+            
+            /* Z-Index Katman Hiyerarşisi (10'dan 999999'a kadar) */
+            --z-bg: 0;
+            --z-canvas: 1;
+            --z-particles: 5;
+            --z-card: 10;
+            --z-interactions: 20;
+            --z-butterflies: 50;
+            --z-shooting-stars: 200;
+            --z-toast: 1000;
+            --z-mirror: 90000;
+            --z-loading: 99999;
+        }
+
+        /* Temel Sıfırlamalar ve Body Ayarları */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Playfair Display', serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
         body {
-            background-color: #050301; height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            overflow: hidden; color: #fff; perspective: 1000px;
-            touch-action: none; /* Kaydırma izleri için kilit */
-            -webkit-user-select: none; user-select: none;
+            background-color: var(--bg-dark);
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: #fff;
+            perspective: 1200px;
+            touch-action: none; /* iOS Safari pull-to-refresh engeller */
+            user-select: none;
+            -webkit-user-select: none;
         }
 
-        /* DAHA PARLAK TABLO */
+        /* ==========================================================================
+           BÖLÜM 2: YÜKLEME EKRANI (PRELOADER)
+           Sitenin kaynakları yüklenirken kullanıcıyı karşılayan premium ekran.
+           ========================================================================== */
+        #loading-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-dark);
+            z-index: var(--z-loading);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1.5s ease-in-out, visibility 1.5s;
+        }
+
+        .loader-ring {
+            width: 80px; height: 80px;
+            border: 4px solid rgba(212, 175, 55, 0.1);
+            border-top: 4px solid var(--gold-primary);
+            border-radius: 50%;
+            animation: spinRing 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px var(--gold-glow);
+        }
+
+        @keyframes spinRing {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); box-shadow: 0 0 40px var(--gold-primary); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .loader-text {
+            color: var(--gold-primary);
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            font-style: italic;
+            animation: pulseText 2s infinite alternate;
+        }
+
+        @keyframes pulseText {
+            0% { opacity: 0.5; text-shadow: 0 0 5px var(--gold-primary); }
+            100% { opacity: 1; text-shadow: 0 0 20px var(--gold-light); }
+        }
+
+        /* ==========================================================================
+           BÖLÜM 3: PARALLAX ARKA PLAN VE CANVAS TAKIMYILDIZI (CONSTELLATION)
+           ========================================================================== */
         .art-background {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            /* Filtre çok daha aydınlık (saydam) hale getirildi */
-            background: linear-gradient(rgba(20, 10, 0, 0.15), rgba(30, 15, 0, 0.3)), 
+            position: absolute;
+            top: -5%; left: -5%; width: 110%; height: 110%;
+            /* Klimt Tablosu daha aydınlık bir filtreyle eklendi */
+            background: linear-gradient(rgba(20, 10, 0, 0.15), rgba(30, 15, 0, 0.35)), 
                         url('https://upload.wikimedia.org/wikipedia/commons/4/40/The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg');
-            background-size: cover; background-position: center 20%;
-            z-index: 0;
-            animation: slowPan 30s infinite alternate ease-in-out, breathe 6s infinite alternate ease-in-out;
+            background-size: cover;
+            background-position: center 20%;
+            z-index: var(--z-bg);
+            animation: slowPanBg 45s infinite alternate ease-in-out, breatheBg 8s infinite alternate ease-in-out;
+            will-change: transform, filter; /* Performans optimizasyonu */
         }
 
-        @keyframes slowPan { 0% { transform: scale(1); } 100% { transform: scale(1.08); } }
-        /* Parlaklık değerleri artırıldı */
-        @keyframes breathe { 0% { filter: brightness(1) contrast(1.05); } 100% { filter: brightness(1.3) contrast(1.15); } }
+        #particle-canvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: var(--z-canvas);
+            pointer-events: none; /* Etkileşimi engellememesi için */
+        }
 
-        /* Kart */
-        .card-wrapper { position: relative; z-index: 10; perspective: 1000px; }
+        @keyframes slowPanBg {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.1) translate(-2%, -1%); }
+        }
+
+        @keyframes breatheBg {
+            0% { filter: brightness(0.95) contrast(1.1) saturate(1.1); }
+            100% { filter: brightness(1.25) contrast(1.2) saturate(1.2); }
+        }
+
+        /* ==========================================================================
+           BÖLÜM 4: ANA KART (3D GLASSMORPHISM ARAYÜZÜ)
+           ========================================================================== */
+        .card-wrapper {
+            position: relative;
+            z-index: var(--z-card);
+            perspective: 1200px;
+            transition: transform 0.3s ease-out;
+        }
+
         .card {
-            background: rgba(15, 10, 5, 0.55); backdrop-filter: blur(10px);
-            border: 1px solid rgba(212, 175, 55, 0.4);
-            padding: 45px 30px; border-radius: 12px; text-align: center;
-            max-width: 420px; width: 90vw;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(212, 175, 55, 0.2);
-            transition: transform 0.1s ease, opacity 0.8s;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            padding: 50px 35px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 450px;
+            width: 92vw;
+            box-shadow: inset 0 0 30px rgba(255,255,255,0.03),
+                        0 25px 60px rgba(0, 0, 0, 0.8), 
+                        0 0 40px rgba(212, 175, 55, 0.15);
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.8s;
+            transform-style: preserve-3d;
         }
-        .card-wrapper.hide .card { transform: scale(0.6) translateY(80px) rotateX(30deg) !important; opacity: 0; pointer-events: none; }
 
-        h1 { font-size: 28px; margin-bottom: 15px; color: #ffd700; font-weight: 600; text-shadow: 0 2px 10px rgba(255, 215, 0, 0.5); }
-        p.message { font-size: 15px; line-height: 1.7; margin-bottom: 35px; color: #fdf5e6; font-style: italic; }
+        .card-wrapper.hide .card {
+            transform: scale(0.3) translateY(200px) rotateX(60deg) !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .card h1 {
+            font-size: 34px;
+            margin-bottom: 15px;
+            color: var(--gold-primary);
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-shadow: 0 4px 15px rgba(212, 175, 55, 0.6);
+            transform: translateZ(40px); /* 3D derinlik */
+        }
+
+        .card p.message {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 35px;
+            color: var(--text-light);
+            font-style: italic;
+            transform: translateZ(25px);
+        }
         
-        .button-group { display: flex; gap: 15px; justify-content: center; }
-        button {
-            padding: 12px 25px; background: transparent; border: 1px solid #d4af37; color: #d4af37;
-            border-radius: 4px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.4s ease;
+        .button-group {
+            display: flex;
+            flex-direction: column; /* Butonları alt alta dizelim */
+            gap: 15px;
+            align-items: center;
+            transform: translateZ(50px);
         }
-        button:active { transform: translateY(2px); }
 
-        /* Yazı Konteyneri */
-        #magic-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        #big-name { font-family: 'Great Vibes', cursive; font-size: 6rem; color: #ffd700; text-shadow: 0 0 25px rgba(255, 215, 0, 0.7); opacity: 0; transform: scale(0.85); transition: all 1.8s ease; }
-        #big-name.show { opacity: 1; transform: scale(1); }
-        #final-message { margin-top: 25px; font-size: 1.3rem; color: #fff; text-align: center; max-width: 90%; min-height: 80px; font-style: italic; text-shadow: 0 2px 10px #000; }
-
-        /* Etkileşim Efektleri */
-        .ripple { position: fixed; border: 2px solid rgba(0, 195, 255, 0.6); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); animation: rippleAnim 1s ease-out forwards; z-index: 15; box-shadow: 0 0 15px rgba(0, 195, 255, 0.4) inset; }
-        @keyframes rippleAnim { 0% { width: 0; height: 0; opacity: 1; border-width: 3px; } 100% { width: 140px; height: 140px; opacity: 0; border-width: 1px; } }
-
-        .brush-trail { position: fixed; width: 8px; height: 8px; background: #ffd700; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); z-index: 14; box-shadow: 0 0 10px #ffd700; animation: fadeTrail 0.8s ease-out forwards; }
-        @keyframes fadeTrail { 0% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); } }
-
-        /* Yeni Zaman Kilidi (Kum Saati / Hilal) */
-        #secret-lock {
-            position: fixed; bottom: 25px; right: 25px; font-size: 30px; opacity: 0.6; cursor: pointer;
-            z-index: 50; transition: all 0.5s; animation: floatLock 3s infinite ease-in-out;
-            -webkit-tap-highlight-color: transparent; filter: drop-shadow(0 0 10px #d4af37);
+        .button-row {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            justify-content: center;
         }
-        @keyframes floatLock { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.1); } }
 
-        /* Gizli Mavi Yıldız */
+        /* Standart Büyü Butonları */
+        .btn-magic {
+            padding: 14px 30px;
+            background: transparent;
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .btn-magic::before {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+            transition: left 0.5s ease; z-index: -1;
+        }
+        .btn-magic:hover::before { left: 100%; }
+        
+        .btn-magic:hover {
+            background: rgba(212, 175, 55, 0.15);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3);
+            transform: translateY(-3px) scale(1.05);
+            color: var(--gold-light);
+        }
+        .btn-magic:active { transform: translateY(2px) scale(0.98); }
+
+        /* Yeni Sihirli Ayna Butonu (Devasa ve Gösterişli) */
+        .btn-mirror {
+            width: 100%;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(138, 115, 34, 0.4));
+            border: 2px solid var(--gold-primary);
+            color: var(--gold-light);
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4), inset 0 0 10px rgba(212, 175, 55, 0.2);
+            animation: pulseMirrorBtn 2s infinite alternate;
+        }
+
+        .btn-mirror:hover {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(138, 115, 34, 0.6));
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 5px 30px rgba(212, 175, 55, 0.6);
+        }
+
+        @keyframes pulseMirrorBtn {
+            0% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.4); border-color: rgba(212, 175, 55, 0.5); }
+            100% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.8), inset 0 0 15px rgba(212, 175, 55, 0.4); border-color: var(--gold-light); }
+        }
+
+        /* ==========================================================================
+           BÖLÜM 5: MERKEZİ BİLDİRİM EKRANI (GÖZE BATAN MODAL)
+           ========================================================================== */
+        #center-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            z-index: var(--z-toast);
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s;
+        }
+
+        #center-modal.active { opacity: 1; visibility: visible; }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(25, 20, 15, 0.95), rgba(10, 5, 2, 0.98));
+            border: 2px solid var(--gold-primary);
+            border-radius: 20px; padding: 40px 30px; text-align: center;
+            max-width: 85vw; width: 400px;
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.5), inset 0 0 20px rgba(212, 175, 55, 0.15);
+            transform: scale(0.8) translateY(-50px);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #center-modal.active .modal-content { transform: scale(1) translateY(0); }
+
+        .modal-icon {
+            font-size: 55px; margin-bottom: 20px;
+            animation: floatIcon 3s infinite ease-in-out;
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.6));
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .modal-text {
+            color: var(--text-light); font-size: 1.4rem; line-height: 1.6;
+            margin-bottom: 30px; font-style: italic; text-shadow: 0 2px 5px #000;
+        }
+
+        .modal-btn {
+            background: var(--gold-primary); color: #000; border: none;
+            padding: 12px 35px; font-size: 1.1rem; font-weight: bold;
+            border-radius: 30px; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.5); transition: all 0.3s;
+        }
+        .modal-btn:hover { background: var(--gold-light); transform: scale(1.1); box-shadow: 0 8px 25px rgba(212, 175, 55, 0.8); }
+
+        /* ==========================================================================
+           BÖLÜM 6: YENİ SİHİRLİ AYNA (MAGIC MIRROR) KAPSAYICISI
+           Kamera entegrasyonu ve Klimt çerçevesi tasarımı.
+           ========================================================================== */
+        #mirror-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95); z-index: var(--z-mirror);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            backdrop-filter: blur(20px);
+        }
+
+        #mirror-overlay.active { opacity: 1; visibility: visible; }
+
+        /* Klimt Tarzı Altın Çerçeve */
+        .mirror-frame {
+            position: relative;
+            width: 90vw; max-width: 450px;
+            height: 65vh; max-height: 700px;
+            background: #000;
+            border-radius: 20px;
+            /* Altın, çok katmanlı, zengin bir sınır efekti */
+            border: 6px solid var(--gold-primary);
+            box-shadow: 0 0 50px rgba(212, 175, 55, 0.7), 
+                        inset 0 0 40px rgba(0, 0, 0, 0.9),
+                        0 0 100px rgba(212, 175, 55, 0.3);
+            overflow: hidden;
+            transform: scale(0.8) translateY(50px);
+            transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #mirror-overlay.active .mirror-frame { transform: scale(1) translateY(0); }
+
+        /* Çerçevenin köşelerine Klimt geometrik motifleri ekleyelim (CSS ile) */
+        .mirror-frame::before, .mirror-frame::after {
+            content: ''; position: absolute;
+            width: 40px; height: 40px;
+            background: repeating-linear-gradient(45deg, var(--gold-primary), var(--gold-primary) 5px, transparent 5px, transparent 10px);
+            z-index: 10; opacity: 0.8;
+        }
+        .mirror-frame::before { top: 0; left: 0; border-bottom-right-radius: 20px; }
+        .mirror-frame::after { bottom: 0; right: 0; border-top-left-radius: 20px; }
+
+        /* Kamera Görüntüsü (Ayna efekti için scaleX -1) */
+        #camera-feed {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1); /* Görüntüyü ayna gibi ters çevirir */
+            filter: contrast(1.1) brightness(1.1); /* Kamerayı biraz daha sıcak gösterir */
+            z-index: 1;
+        }
+
+        /* Kameranın üstüne binen altın tozları */
+        .mirror-particles-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 40%, rgba(20, 10, 0, 0.7) 100%);
+            z-index: 5; pointer-events: none;
+        }
+
+        /* Ayna Altı Zarif Yazı */
+        .mirror-caption {
+            position: absolute; bottom: 20px; left: 0; width: 100%;
+            text-align: center; color: var(--gold-light); font-size: 1.3rem;
+            font-style: italic; text-shadow: 0 4px 15px #000, 0 0 10px #000;
+            z-index: 10; padding: 0 15px;
+            animation: pulseMirrorText 3s infinite alternate;
+        }
+
+        @keyframes pulseMirrorText {
+            0% { opacity: 0.7; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1.02); }
+        }
+
+        /* Kapat Butonu */
+        .mirror-close-btn {
+            position: absolute; top: 15px; right: 15px;
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(0,0,0,0.6); border: 2px solid var(--gold-primary);
+            color: var(--gold-primary); font-size: 20px; font-weight: bold;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 20; backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+        .mirror-close-btn:hover { background: var(--gold-primary); color: #000; transform: rotate(90deg); }
+
+        /* ==========================================================================
+           BÖLÜM 7: GİZLİ MAVİ KUTUP YILDIZI
+           ========================================================================== */
         #hidden-blue-star {
-            position: fixed; top: 15%; left: 20%; width: 12px; height: 12px;
-            background: #00f0ff; border-radius: 50%; z-index: 5; cursor: pointer;
-            box-shadow: 0 0 15px #00f0ff; animation: pulseBlue 3s infinite; opacity: 0.4;
+            position: fixed; top: 18%; left: 15%; width: 45px; height: 45px;
+            z-index: var(--z-particles); cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            animation: breatheStar 4s infinite alternate;
         }
-        @keyframes pulseBlue { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.5); } }
 
-        /* Kayan Yıldız (10 Saniyede Bir) */
-        .interactive-star { position: fixed; top: -50px; right: -50px; width: 80px; height: 80px; z-index: 200; cursor: pointer; animation: starShoot 8s linear forwards; -webkit-tap-highlight-color: transparent; }
-        .interactive-star::after { content: ''; position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: #fff; box-shadow: 0 0 15px #fff, 0 0 30px #d4af37; border-radius: 50%; transform: translate(-50%, -50%); }
-        .interactive-star::before { content: ''; position: absolute; top: 50%; right: 50%; width: 120px; height: 2px; background: linear-gradient(270deg, rgba(212, 175, 55, 1), transparent); transform-origin: right; transform: translateY(-50%) rotate(25deg); }
-        @keyframes starShoot { 0% { transform: translate(0, 0); opacity: 1; } 85% { opacity: 1; } 100% { transform: translate(-120vw, 120vh); opacity: 0; } }
-
-        .butterfly { position: fixed; font-size: 35px; z-index: 50; cursor: pointer; animation: flyUp linear forwards; filter: drop-shadow(0 0 8px rgba(0, 195, 255, 0.6)); -webkit-tap-highlight-color: transparent; }
-        @keyframes flyUp { 0% { transform: translateY(110vh) rotate(0deg) scale(1); opacity: 1; } 50% { transform: translateY(40vh) translateX(-20px) rotate(-10deg) scale(1); } 100% { transform: translateY(-20vh) rotate(0deg) scale(1); opacity: 0; } }
+        /* 8 Köşeli Özel Mavi Yıldız Çizimi */
+        .blue-star-shape {
+            position: relative; width: 100%; height: 100%;
+            background: var(--blue-primary);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            box-shadow: 0 0 25px var(--blue-primary); transition: all 0.3s;
+        }
         
-        .heart-pop { position: fixed; font-size: 24px; z-index: 60; pointer-events: none; animation: popOut 1s ease-out forwards; }
-        @keyframes popOut { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot)); opacity: 0; } }
+        .blue-star-aura {
+            position: absolute; width: 250%; height: 250%;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.5) 0%, transparent 70%);
+            border-radius: 50%; z-index: -1; animation: spinAura 12s linear infinite;
+        }
 
-        /* Bildirim Toast */
-        #custom-toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: rgba(10, 5, 2, 0.95); border: 1px solid #d4af37; color: #ffd700; padding: 15px 25px; border-radius: 30px; font-size: 15px; font-style: italic; z-index: 1000; transition: bottom 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); box-shadow: 0 5px 25px rgba(0,0,0,0.8); text-align: center; width: max-content; max-width: 90vw; pointer-events: none;}
-        #custom-toast.show { bottom: 40px; }
+        @keyframes breatheStar {
+            0% { transform: scale(0.6) rotate(0deg); filter: brightness(0.8); }
+            100% { transform: scale(1.1) rotate(20deg); filter: brightness(1.5) drop-shadow(0 0 20px var(--blue-primary)); }
+        }
+        @keyframes spinAura { 100% { transform: rotate(360deg); } }
+
+        /* ==========================================================================
+           BÖLÜM 8: ETKİLEŞİM EFEKTLERİ (Kelebekler, Kayan Yıldız, Damla, Fırça)
+           ========================================================================== */
+        
+        /* Uçan Kelebekler */
+        .butterfly {
+            position: fixed; font-size: 45px; z-index: var(--z-butterflies);
+            cursor: pointer; pointer-events: auto !important; /* Tıklamayı zorla al */
+            filter: drop-shadow(0 0 12px rgba(0, 195, 255, 0.8));
+            animation-fill-mode: forwards; animation-timing-function: linear;
+        }
+
+        @keyframes flyPath1 {
+            0% { transform: translate3d(0, 110vh, 0) rotate(0deg) scale(0.8); opacity: 0; }
+            10% { opacity: 1; }
+            30% { transform: translate3d(50px, 70vh, 0) rotate(15deg) scale(1.1); }
+            60% { transform: translate3d(-40px, 40vh, 0) rotate(-15deg) scale(0.9); }
+            90% { opacity: 1; }
+            100% { transform: translate3d(20px, -20vh, 0) rotate(0deg) scale(1); opacity: 0; }
+        }
+
+        @keyframes flyPath2 {
+            0% { transform: translate3d(0, 110vh, 0) rotate(-20deg) scale(1); opacity: 0; }
+            20% { opacity: 1; }
+            50% { transform: translate3d(-70px, 50vh, 0) rotate(20deg) scale(1.2); }
+            80% { transform: translate3d(60px, 10vh, 0) rotate(-10deg) scale(1); opacity: 1; }
+            100% { transform: translate3d(0, -20vh, 0) rotate(0deg) scale(0.8); opacity: 0; }
+        }
+
+        /* Kayan Yıldız Efekti */
+        .shooting-star-container {
+            position: fixed; top: -100px; right: -100px; width: 150px; height: 150px;
+            z-index: var(--z-shooting-stars); cursor: pointer;
+            animation: starShootAnim 7s linear forwards; pointer-events: auto;
+        }
+        .shooting-star-core {
+            position: absolute; top: 50%; left: 50%; width: 10px; height: 10px;
+            background: #fff; box-shadow: 0 0 25px #fff, 0 0 50px var(--gold-primary);
+            border-radius: 50%; transform: translate(-50%, -50%);
+        }
+        .shooting-star-tail {
+            position: absolute; top: 50%; right: 50%; width: 250px; height: 3px;
+            background: linear-gradient(270deg, #fff, var(--gold-primary), transparent);
+            transform-origin: right; transform: translateY(-50%) rotate(35deg);
+        }
+        @keyframes starShootAnim { 0% { transform: translate(0, 0); opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(-150vw, 150vh); opacity: 0; } }
+
+        /* Emoji Partikülleri (Patlama) */
+        .heart-particle {
+            position: fixed; font-size: 30px; z-index: 99999; pointer-events: none;
+            animation: popOutAnim 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+        }
+        @keyframes popOutAnim {
+            0% { transform: translate(-50%, -50%) scale(0.1); opacity: 1; }
+            70% { opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot)); opacity: 0; }
+        }
+
+        /* Su Damlası (Ripple) */
+        .ripple-effect {
+            position: fixed; border: 2px solid rgba(0, 240, 255, 0.8); border-radius: 50%;
+            pointer-events: none; transform: translate(-50%, -50%);
+            animation: rippleExpand 1s ease-out forwards; z-index: var(--z-interactions);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.5) inset, 0 0 25px rgba(0, 240, 255, 0.5);
+        }
+        @keyframes rippleExpand { 0% { width: 0; height: 0; opacity: 1; border-width: 5px; } 100% { width: 160px; height: 160px; opacity: 0; border-width: 0px; } }
+
+        /* Fırça İzi */
+        .brush-mark {
+            position: fixed; background: radial-gradient(circle, #ffd700 0%, #d4af37 60%, transparent 100%);
+            border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%);
+            z-index: var(--z-interactions); animation: fadeBrush 0.8s ease-out forwards; mix-blend-mode: screen;
+        }
+        @keyframes fadeBrush { 0% { opacity: 0.9; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.1); } }
+
+        /* Zaman Kilidi (Kum Saati / Hilal) */
+        #time-lock {
+            position: fixed; bottom: 30px; right: 30px; font-size: 40px; opacity: 0.7;
+            cursor: pointer; z-index: var(--z-toast); transition: all 0.4s;
+            animation: floatLock 4s infinite ease-in-out; filter: drop-shadow(0 0 20px var(--gold-primary));
+        }
+        #time-lock:hover { opacity: 1; transform: scale(1.2); }
+        @keyframes floatLock { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+        /* Final Büyülü Yazı Konteyneri */
+        #magic-text-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;
+            z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        #giant-name {
+            font-family: 'Great Vibes', cursive; font-size: 7.5rem; color: var(--gold-primary);
+            text-shadow: 0 0 40px rgba(212, 175, 55, 0.9), 0 0 15px #fff;
+            opacity: 0; transform: scale(0.5); transition: all 2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #giant-name.show { opacity: 1; transform: scale(1); }
+        
+        #typewriter-text {
+            margin-top: 30px; font-size: 1.6rem; color: #fff; text-align: center;
+            max-width: 85%; min-height: 90px; font-style: italic; text-shadow: 0 4px 20px rgba(0,0,0,1); line-height: 1.6;
+        }
+        .cursor-blink {
+            display: inline-block; width: 3px; height: 1.4rem; background-color: var(--gold-primary);
+            margin-left: 5px; animation: blinker 0.8s infinite; vertical-align: middle;
+        }
+        @keyframes blinker { 50% { opacity: 0; } }
+
     </style>
 </head>
 <body>
 
-    <!-- Dinamik Müzik Çalar -->
-    <audio id="bg-music" loop>
-        <source id="music-source" src="" type="audio/mpeg">
+    <!-- Yükleme Ekranı (Preloader) -->
+    <div id="loading-screen">
+        <div class="loader-ring"></div>
+        <div class="loader-text">Damla'nın dünyasına bağlanılıyor...</div>
+    </div>
+
+    <!-- Dinamik Müzik Motoru -->
+    <audio id="bg-audio" loop>
+        <source id="audio-src" src="" type="audio/mpeg">
     </audio>
 
-    <div class="art-background" id="bg-art"></div>
+    <!-- Parallax Arka Plan ve Canvas Yıldız Ağı -->
+    <div class="art-background" id="parallax-bg"></div>
+    <canvas id="particle-canvas"></canvas>
     
-    <!-- Gizli Mavi Yıldız -->
-    <div id="hidden-blue-star" onclick="catchBlueStar(event)"></div>
-
-    <div id="magic-container">
-        <div id="big-name">Damla</div>
-        <div id="final-message"></div>
+    <!-- Yeni Gizli Mavi Kutup Yıldızı -->
+    <div id="hidden-blue-star">
+        <div class="blue-star-aura"></div>
+        <div class="blue-star-shape"></div>
     </div>
 
     <!-- Zaman Kilidi -->
-    <div id="secret-lock" onclick="handleLockClick(event)">⏳</div>
-    <div id="custom-toast"></div>
+    <div id="time-lock">⏳</div>
 
-    <div class="card-wrapper" id="main-card-wrapper">
-        <div class="card" id="card">
+    <!-- Final Hikaye Animasyon Alanı -->
+    <div id="magic-text-container">
+        <div id="giant-name">Damla</div>
+        <div id="typewriter-text"></div>
+    </div>
+
+    <!-- Ana Arayüz Kartı (3D) -->
+    <div class="card-wrapper" id="main-card">
+        <div class="card">
             <h1>Merhaba Damla</h1>
             <p class="message">Ekranda uçuşan mavi kelebeklerden birini yakalamayı dene...</p>
             
             <div class="button-group">
-                <button onclick="triggerMagic(1, event)">İyi</button>
-                <button onclick="triggerMagic(2, event)">Çok İyi</button>
+                <div class="button-row">
+                    <button class="btn-magic" data-msg="1">İyi</button>
+                    <button class="btn-magic" data-msg="2">Çok İyi</button>
+                </div>
+                <!-- EFSANEVİ SİHİRLİ AYNA BUTONU -->
+                <button class="btn-mirror" onclick="openMagicMirror(event)">Klimt'in En Gizli Şaheseri 🪞</button>
             </div>
         </div>
     </div>
 
+    <!-- SİHİRLİ AYNA (MAGIC MIRROR) MODALI -->
+    <div id="mirror-overlay">
+        <div class="mirror-frame" id="mirror-frame">
+            <video id="camera-feed" autoplay playsinline></video>
+            <div class="mirror-particles-overlay" id="mirror-particles"></div>
+            <div class="mirror-caption">Tarihin hiçbir tablosuna sığmayacak kadar eşsiz bir şaheser... 💙</div>
+            <div class="mirror-close-btn" onclick="closeMagicMirror(event)">✖</div>
+        </div>
+    </div>
+
+    <!-- MERKEZİ BİLDİRİM (TOAST MODAL) -->
+    <div id="center-modal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modal-icon">✨</div>
+            <div class="modal-text" id="modal-text">Mesaj buraya gelecek...</div>
+            <button class="modal-btn" id="modal-close-btn">Gülümsedim</button>
+        </div>
+    </div>
+
     <script>
-        // --- TOAST BİLDİRİM ---
-        let toastTimeout;
-        function showToast(msg, duration = 3000) {
-            const toast = document.getElementById('custom-toast');
-            toast.textContent = msg;
-            toast.classList.add('show');
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, duration);
-        }
+        /* ==========================================================================
+           BÖLÜM 1: GENEL AYARLAR, METİNLER VE YAPILANDIRMA (CONFIG)
+           Sistemin beyni burasıdır.
+           ========================================================================== */
+        const CONFIG = {
+            texts: {
+                msg1: "Klimt bu tabloyu çizerken dünyanın en güzel altın sarısını kullandı... Ama sanırım o mavi bakışlarına hiç denk gelmemişti.",
+                msg2: "Tarihin en ünlü eserleri altın yaldızlarla işlenmiş olabilir, ama bence o mavi gözlerin hiçbir tabloya sığmayacak kadar güzel..."
+            },
+            audio: {
+                aksam: "sarki_aksam.mp3",   // 19:00 - 01:00
+                gece: "sarki_gece.mp3",     // 01:00 - 14:00
+                gunduz: "sarki_gunduz.mp3"  // 14:00 - 19:00
+            },
+            timings: {
+                butterflySpawnRate: 1800, // Kelebek üretim hızı (ms)
+                shootingStarRate: 10000,  // Kayan yıldız geçiş aralığı (ms)
+                longPressDuration: 2500,  // Kalp atışı için gerekli basma süresi (ms)
+                typewriterSpeed: 50       // Harf yazma hızı (ms)
+            },
+            particles: {
+                canvasStarCount: 100,     // Arka plan yıldız ağı sayısı
+                connectionDistance: 130   // Yıldızların bağlanma mesafesi
+            }
+        };
 
-        // --- ZAMANA GÖRE DİNAMİK MÜZİK ---
-        function setDynamicMusic() {
-            const source = document.getElementById('music-source');
+        // DOM Element Önbelleği
+        const els = {
+            loading: document.getElementById('loading-screen'),
+            audio: document.getElementById('bg-audio'),
+            audioSrc: document.getElementById('audio-src'),
+            cardWrap: document.getElementById('main-card'),
+            bg: document.getElementById('parallax-bg'),
+            modal: document.getElementById('center-modal'),
+            modalIcon: document.getElementById('modal-icon'),
+            modalText: document.getElementById('modal-text'),
+            modalBtn: document.getElementById('modal-close-btn'),
+            timeLock: document.getElementById('time-lock'),
+            blueStar: document.getElementById('hidden-blue-star'),
+            giantName: document.getElementById('giant-name'),
+            typewriter: document.getElementById('typewriter-text'),
+            canvas: document.getElementById('particle-canvas'),
+            mirrorOverlay: document.getElementById('mirror-overlay'),
+            cameraFeed: document.getElementById('camera-feed'),
+            mirrorParticles: document.getElementById('mirror-particles')
+        };
+
+        let isAppActive = false; // Final hikaye modunda mıyız?
+        let starCatchCount = 0;  // Kayan yıldız yakalama sayacı
+        let mirrorStream = null; // Kamera yayını değişkeni
+
+        /* ==========================================================================
+           BÖLÜM 2: YÜKLEME EKRANI VE DİNAMİK MÜZİK MOTORU
+           ========================================================================== */
+        window.addEventListener('load', () => {
+            setMusicByTime();
+            // Site yüklendikten 2 saniye sonra yükleme ekranını yavaşça kaldır
+            setTimeout(() => {
+                els.loading.style.opacity = '0';
+                setTimeout(() => {
+                    els.loading.style.display = 'none';
+                    initCanvasParticles(); // Canvas fizik motorunu başlat
+                }, 1500);
+            }, 2000);
+        });
+
+        // Saate göre çalınacak mp3 dosyasını seçer
+        function setMusicByTime() {
             const hour = new Date().getHours();
-            
             if (hour >= 19 || hour < 1) {
-                // 19:00 - 01:00 arası
-                source.src = "sarki_aksam.mp3";
+                els.audioSrc.src = CONFIG.audio.aksam;
             } else if (hour >= 1 && hour < 14) {
-                // 01:00 - 14:00 arası
-                source.src = "sarki_gece.mp3"; 
+                els.audioSrc.src = CONFIG.audio.gece;
             } else {
-                // 14:00 - 19:00 arası
-                source.src = "sarki_gunduz.mp3";
+                els.audioSrc.src = CONFIG.audio.gunduz;
             }
-            document.getElementById('bg-music').load();
-        }
-        setDynamicMusic();
-
-        function playMusic() {
-            const music = document.getElementById('bg-music');
-            if (music.paused) music.play().catch(e => console.log("Müzik engeli"));
+            els.audio.load();
         }
 
-        // --- ZAMAN KİLİDİ (AKŞAM 7'DEN SONRA) ---
-        function updateLockIcon() {
+        // Kullanıcı herhangi bir yere dokunduğunda müziği tetikler
+        function forcePlayMusic() {
+            if (els.audio.paused) {
+                els.audio.play().catch(e => console.warn("Tarayıcı müzik politikasını bekliyor."));
+            }
+        }
+
+        /* ==========================================================================
+           BÖLÜM 3: MERKEZİ BİLDİRİM SİSTEMİ (MODAL YÖNETİMİ)
+           ========================================================================== */
+        let autoCloseModalTimer;
+
+        function showBigNotification(icon, message, duration = 6000) {
+            clearTimeout(autoCloseModalTimer);
+            els.modalIcon.innerHTML = icon;
+            els.modalText.innerHTML = message;
+            els.modal.classList.add('active');
+
+            autoCloseModalTimer = setTimeout(() => { closeModal(); }, duration);
+        }
+
+        function closeModal() {
+            els.modal.classList.remove('active');
+        }
+
+        els.modalBtn.addEventListener('click', () => {
+            clearTimeout(autoCloseModalTimer);
+            closeModal();
+            forcePlayMusic();
+        });
+
+        /* ==========================================================================
+           BÖLÜM 4: ZAMAN KİLİDİ (KUM SAATİ & HİLAL)
+           ========================================================================== */
+        function checkTimeStatus() {
             const hour = new Date().getHours();
-            const lock = document.getElementById('secret-lock');
-            // 19:00'dan sonra veya gece yarısı (00:00 - 06:00) açılsın
+            // Saat 19:00 - 06:00 arası gece modu (Hilal)
             if (hour >= 19 || hour < 6) {
-                lock.innerHTML = '🌙'; // Açık hali Hilal
+                els.timeLock.innerHTML = '🌙';
             } else {
-                lock.innerHTML = '⏳'; // Kapalı hali Kum Saati
+                els.timeLock.innerHTML = '⏳';
             }
         }
-        updateLockIcon();
+        setInterval(checkTimeStatus, 60000); // Her dakika kontrol et
+        checkTimeStatus();
 
-        function handleLockClick(e) {
+        els.timeLock.addEventListener('click', (e) => {
             e.stopPropagation();
+            forcePlayMusic();
             const hour = new Date().getHours();
             if (hour >= 19 || hour < 6) {
-                showToast("Bu gece o mavi gözlerin her zamankinden daha güzel parlıyor... 💙", 5000);
+                showBigNotification('🌙', "Bu gece o mavi gözlerin her zamankinden daha güzel parlıyor...", 7000);
             } else {
-                showToast("Güneşin batmasını bekle, asıl sürpriz akşam 7'den sonra... ⏳", 4000);
+                showBigNotification('⏳', "Güneşin batmasını bekle, asıl sürpriz akşam 7'den sonra başlıyor...", 6000);
             }
-        }
+        });
 
-        // --- MELEK SAATLERİ (11:11, 22:22 vb.) ---
+        /* ==========================================================================
+           BÖLÜM 5: GİZLİ EASTER EGG'LER (MAVİ YILDIZ & MELEK SAATLERİ)
+           ========================================================================== */
+        els.blueStar.addEventListener('pointerdown', (e) => {
+            e.stopPropagation();
+            els.blueStar.style.display = 'none'; // Bulunduktan sonra kaybolur
+            forcePlayMusic();
+            explodeHearts(e.clientX, e.clientY, false); // Mavi kalpler patlat
+            showBigNotification('💙', "Milyonlarca yıldız arasında sadece biri maviydi... Tıpkı o gözler gibi.", 8000);
+        });
+
+        // Melek Saatleri (11:11, 22:22, 00:00) Kontrolcüsü
         setInterval(() => {
             const d = new Date();
             const h = d.getHours();
             const m = d.getMinutes();
             if ((h === 11 && m === 11) || (h === 22 && m === 22) || (h === 0 && m === 0)) {
-                showToast(`Saat şu an ${h}:${m < 10 ? '0'+m : m}... Acaba aklından ne geçiyordu? ✨`, 6000);
+                showBigNotification('✨', `Saat şu an ${h}:${m < 10 ? '0'+m : m}... Acaba aklından ne geçiyordu?`, 8000);
             }
-        }, 60000); // Her dakika kontrol et
+        }, 60000);
 
-        // --- GİZLİ MAVİ YILDIZ ---
-        function catchBlueStar(e) {
+        /* ==========================================================================
+           BÖLÜM 6: EFSANEVİ SİHİRLİ AYNA MOTORU (ÖN KAMERA ENTEGRASYONU)
+           Kullanıcının yüzünü Klimt şaheserine dönüştüren modül.
+           ========================================================================== */
+        async function openMagicMirror(e) {
             e.stopPropagation();
-            e.target.style.display = 'none'; // Kaybolsun
-            showToast("Milyonlarca yıldız arasında sadece biri maviydi... Tıpkı o gözler gibi. 💙", 6000);
-            createHearts(e.clientX, e.clientY, false);
-            playMusic();
+            forcePlayMusic();
+            
+            try {
+                // Tarayıcıdan ön kamera izni iste (facingMode: 'user')
+                mirrorStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "user" }, 
+                    audio: false 
+                });
+                
+                // Yayını video elementine bağla
+                els.cameraFeed.srcObject = mirrorStream;
+                
+                // Modalı aç
+                els.mirrorOverlay.classList.add('active');
+                
+                // Ayna içine rastgele altın tozları oluştur
+                spawnMirrorGoldDust();
+                
+            } catch (err) {
+                // Eğer kullanıcı kameraya izin vermezse veya cihazda kamera yoksa zarifçe uyar
+                console.error("Kamera açılamadı:", err);
+                showBigNotification('📷', "Kamera izni verilmediği için o eşsiz şaheseri göremiyoruz... İzine izin verip tekrar dener misin?", 6000);
+            }
         }
 
-        // --- UZUN BASMA (KALP ATIŞI) & FIRÇA İZİ ---
+        function closeMagicMirror(e) {
+            if(e) e.stopPropagation();
+            els.mirrorOverlay.classList.remove('active');
+            
+            // Kamera yayınını durdur (Yeşil ışığı kapatmak ve pili korumak için hayati önem taşır)
+            if (mirrorStream) {
+                mirrorStream.getTracks().forEach(track => track.stop());
+                mirrorStream = null;
+                els.cameraFeed.srcObject = null;
+            }
+            
+            // Tozları temizle
+            els.mirrorParticles.innerHTML = '';
+        }
+
+        // Ayna içindeki Klimt altın tozlarını üretir
+        function spawnMirrorGoldDust() {
+            els.mirrorParticles.innerHTML = '';
+            for(let i=0; i<30; i++) {
+                let dust = document.createElement('div');
+                dust.style.position = 'absolute';
+                dust.style.width = (Math.random() * 4 + 2) + 'px';
+                dust.style.height = dust.style.width;
+                dust.style.background = '#d4af37';
+                dust.style.borderRadius = Math.random() > 0.5 ? '50%' : '0%'; // Yuvarlak veya kare (Klimt stili)
+                dust.style.left = Math.random() * 100 + '%';
+                dust.style.top = Math.random() * 100 + '%';
+                dust.style.opacity = Math.random() * 0.7 + 0.3;
+                dust.style.boxShadow = '0 0 10px #ffd700';
+                
+                // Rastgele yavaş yüzme animasyonu (Web Animations API)
+                dust.animate([
+                    { transform: `translate(0, 0) rotate(0deg)`, opacity: 0 },
+                    { opacity: dust.style.opacity, offset: 0.2 },
+                    { transform: `translate(${(Math.random()-0.5)*100}px, ${(Math.random()-0.5)*100}px) rotate(${Math.random()*360}deg)` },
+                    { opacity: 0, offset: 0.9 }
+                ], {
+                    duration: Math.random() * 5000 + 5000,
+                    iterations: Infinity,
+                    direction: 'alternate',
+                    easing: 'ease-in-out'
+                });
+                
+                els.mirrorParticles.appendChild(dust);
+            }
+        }
+
+        /* ==========================================================================
+           BÖLÜM 7: FİZİKSEL ETKİLEŞİMLER (SU DAMLASI, FIRÇA, KALP ATIŞI TİTREŞİMİ)
+           ========================================================================== */
         let pressTimer;
         let isDrawing = false;
 
-        function startPress(e) {
+        function onPointerDown(e) {
+            // Eğer butona, aynaya veya kelebeğe basıyorsa bu efektleri ezme
+            if(e.target.closest('button') || e.target.classList.contains('butterfly') || e.target.closest('#mirror-overlay') || e.target.closest('#center-modal')) return;
+            
             isDrawing = true;
-            createRipple(e);
+            let x = e.clientX || (e.touches && e.touches[0].clientX);
+            let y = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            spawnRipple(x, y);
+
+            // Uzun basma kontrolü (2.5 saniye basılı tutarsa Kalp Atışı Titreşimi tetiklenir)
             pressTimer = setTimeout(() => {
-                if (navigator.vibrate) navigator.vibrate([100, 100, 100]); // Kalp atışı titreşimi
-                showToast("İşte tam olarak bu kadar özelsin... 💙", 5000);
-                document.getElementById('bg-art').style.filter = "brightness(0.5)"; // Arka plan kararır
-                setTimeout(() => document.getElementById('bg-art').style.filter = "", 2000);
-            }, 2500); // 2.5 saniye basılı tutarsa
+                if (navigator.vibrate) navigator.vibrate([100, 100, 100]); // 3 kalp atışı ritmi
+                showBigNotification('🫀', "İşte tam olarak bu kadar özelsin...", 6000);
+                els.bg.style.filter = "brightness(0.2) grayscale(0.8)"; 
+                setTimeout(() => els.bg.style.filter = "", 2500);
+            }, CONFIG.timings.longPressDuration);
         }
 
-        function cancelPress() {
+        function onPointerUp() {
             clearTimeout(pressTimer);
             isDrawing = false;
         }
 
-        document.addEventListener('mousedown', startPress);
-        document.addEventListener('mouseup', cancelPress);
-        document.addEventListener('touchstart', startPress, {passive: true});
-        document.addEventListener('touchend', cancelPress);
-
-        // Klimt Fırça İzi
-        document.addEventListener('mousemove', drawTrail);
-        document.addEventListener('touchmove', (e) => { cancelPress(); drawTrail(e); }, {passive: true});
-
-        function drawTrail(e) {
-            if(!isDrawing && e.type === 'mousemove') return; // Sadece basılıyken çizer (mobilde dokunurken)
-            const trail = document.createElement('div');
-            trail.className = 'brush-trail';
-            let x = e.clientX || (e.touches && e.touches[0].clientX);
-            let y = e.clientY || (e.touches && e.touches[0].clientY);
-            trail.style.left = x + 'px';
-            trail.style.top = y + 'px';
-            document.body.appendChild(trail);
-            setTimeout(() => trail.remove(), 800);
-        }
-
-        function createRipple(e) {
-            const ripple = document.createElement('div');
-            ripple.classList.add('ripple');
-            let x = e.clientX || (e.touches && e.touches[0].clientX);
-            let y = e.clientY || (e.touches && e.touches[0].clientY);
-            ripple.style.left = `${x}px`; ripple.style.top = `${y}px`;
-            document.body.appendChild(ripple);
-            setTimeout(() => { ripple.remove(); }, 1000);
-        }
-
-        // --- KAYAN YILDIZ (10 SANİYEDE BİR & 2 AŞAMALI MESAJ) ---
-        let starCatchCount = 0;
-        
-        setInterval(() => {
-            const star = document.createElement('div');
-            star.className = 'interactive-star';
+        function onPointerMove(e) {
+            if (!isDrawing) return;
+            clearTimeout(pressTimer); // Parmağını hareket ettirirse uzun basma iptal olur
             
-            const catchStar = (e) => {
-                e.stopPropagation();
+            let x = e.clientX || (e.touches && e.touches[0].clientX);
+            let y = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            const brush = document.createElement('div');
+            brush.className = 'brush-mark';
+            brush.style.left = x + 'px'; brush.style.top = y + 'px';
+            
+            // Fırça kalınlığı her karede hafif değişir
+            const size = Math.random() * 15 + 5;
+            brush.style.width = size + 'px'; brush.style.height = size + 'px';
+            
+            document.body.appendChild(brush);
+            setTimeout(() => brush.remove(), 1000);
+        }
+
+        // Tüm fare ve dokunmatik olaylarını dinleyicilere bağla
+        document.addEventListener('mousedown', onPointerDown);
+        document.addEventListener('mouseup', onPointerUp);
+        document.addEventListener('mousemove', onPointerMove);
+        document.addEventListener('touchstart', onPointerDown, {passive: false});
+        document.addEventListener('touchend', onPointerUp);
+        document.addEventListener('touchmove', onPointerMove, {passive: false});
+
+        function spawnRipple(x, y) {
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple-effect';
+            ripple.style.left = x + 'px'; ripple.style.top = y + 'px';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 1200);
+        }
+
+        /* ==========================================================================
+           BÖLÜM 8: 3D JİROSKOP & FARE PARALLAX MOTORU (DERİNLİK HİSSİ)
+           ========================================================================== */
+        window.addEventListener('deviceorientation', (e) => {
+            if (!e.gamma || !e.beta) return;
+            // Eğimleri -25 ile +25 derece arasına sıkıştır
+            const tiltX = Math.min(Math.max(e.gamma, -25), 25);
+            const tiltY = Math.min(Math.max(e.beta - 45, -25), 25);
+            
+            els.bg.style.transform = `translate3d(${tiltX * 1.5}px, ${tiltY * 1.5}px, 0) scale(1.1)`;
+            els.cardWrap.style.transform = `translate3d(${-tiltX}px, ${-tiltY}px, 0) rotateY(${tiltX * 0.6}deg) rotateX(${-tiltY * 0.6}deg)`;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            const moveX = (window.innerWidth / 2 - e.pageX) / 40;
+            const moveY = (window.innerHeight / 2 - e.pageY) / 40;
+            els.bg.style.transform = `translate3d(${-moveX * 1.5}px, ${-moveY * 1.5}px, 0) scale(1.1)`;
+            els.cardWrap.style.transform = `translate3d(${moveX}px, ${moveY}px, 0) rotateY(${moveX * 0.8}deg) rotateX(${-moveY * 0.8}deg)`;
+        });
+
+        /* ==========================================================================
+           BÖLÜM 9: AVLANABİLİR ENTİTELER (KELEBEKLER VE KAYAN YILDIZLAR)
+           ========================================================================== */
+        
+        // --- 10 Saniyede Bir Çıkan Gelişmiş Kayan Yıldız ---
+        setInterval(() => {
+            if (isAppActive || els.mirrorOverlay.classList.contains('active')) return; 
+            
+            const star = document.createElement('div');
+            star.className = 'shooting-star-container';
+            star.innerHTML = `<div class="shooting-star-core"></div><div class="shooting-star-tail"></div>`;
+            
+            // Pointerdown donanım seviyesinde tıklamayı kaçırmaz
+            star.addEventListener('pointerdown', (e) => {
+                e.stopPropagation(); e.preventDefault();
                 star.remove();
                 starCatchCount++;
+                forcePlayMusic();
                 
+                let x = e.clientX || (e.touches && e.touches[0].clientX);
+                let y = e.clientY || (e.touches && e.touches[0].clientY);
+                explodeHearts(x, y, true); // Altın emoji yıldızları patlat
+
+                // Dilek Mantığı
                 if (starCatchCount === 1) {
-                    showToast("Hemen içinden bir dilek tut... ✨", 6000);
+                    showBigNotification('🌠', "Hemen içinden bir dilek tut...", 6000);
                 } else {
-                    showToast("Kim bilir, belki de o tuttuğun dilek çoktan kabul olmuştur... 💙", 7000);
+                    showBigNotification('✨', "Kim bilir, belki de o tuttuğun dilek çoktan kabul olmuştur...", 7000);
                 }
-                
-                playMusic();
-                createHearts(e.clientX || (e.touches && e.touches[0].clientX), e.clientY || (e.touches && e.touches[0].clientY), true);
-            };
+            });
 
-            star.addEventListener('touchstart', catchStar, {passive: false});
-            star.addEventListener('mousedown', catchStar);
             document.body.appendChild(star);
-        }, 10000); // Tam 10 saniyede bir yeni yıldız üretir
+            setTimeout(() => { if (document.body.contains(star)) star.remove(); }, 7500);
+        }, CONFIG.timings.shootingStarRate);
 
-        // --- UÇAN KELEBEKLER ---
-        setInterval(spawnButterfly, 1500);
-
-        function spawnButterfly() {
+        // --- Sürekli Üretilen Mavi Kelebekler ---
+        setInterval(() => {
+            if (isAppActive || els.mirrorOverlay.classList.contains('active')) return;
+            
             const b = document.createElement('div');
-            b.innerHTML = '🦋'; b.className = 'butterfly';
-            b.style.left = Math.random() * 85 + 'vw';
-            b.style.animationDuration = (Math.random() * 4 + 4) + 's'; 
-            b.addEventListener('touchstart', (e) => {
+            b.innerHTML = '🦋';
+            b.className = 'butterfly';
+            
+            // Rastgele çıkış noktası (Ekranın dışından)
+            b.style.left = (Math.random() * 80 + 10) + 'vw'; 
+            const duration = Math.random() * 4 + 5; // 5-9 saniye arası
+            b.style.animationDuration = duration + 's';
+            
+            // İki farklı rotadan birini seç
+            b.style.animationName = Math.random() > 0.5 ? 'flyPath1' : 'flyPath2';
+
+            b.addEventListener('pointerdown', (e) => {
                 e.preventDefault(); e.stopPropagation();
-                b.remove(); playMusic();
-                createHearts(e.touches[0].clientX, e.touches[0].clientY, false);
-            }, { passive: false });
+                
+                b.remove(); // Yakalandı
+                forcePlayMusic();
+                
+                let x = e.clientX || (e.touches && e.touches[0].clientX);
+                let y = e.clientY || (e.touches && e.touches[0].clientY);
+                explodeHearts(x, y, false); // Mavi ve sarı kalpler patlat
+            });
+
             document.body.appendChild(b);
-            setTimeout(() => b.remove(), 9000); 
-        }
+            setTimeout(() => { if (document.body.contains(b)) b.remove(); }, duration * 1000);
+        }, CONFIG.timings.butterflySpawnRate);
 
-        function createHearts(x, y, isGold = false) {
-            const heartColors = isGold ? ['✨', '⭐', '🌟'] : ['💙', '💛', '💖', '💙']; 
-            for(let i = 0; i < 8; i++) {
-                const h = document.createElement('div');
-                h.innerHTML = heartColors[Math.floor(Math.random() * heartColors.length)];
-                h.className = 'heart-pop';
-                h.style.left = x + 'px'; h.style.top = y + 'px';
-                h.style.setProperty('--tx', `${(Math.random() - 0.5) * 200}px`);
-                h.style.setProperty('--ty', `${(Math.random() - 1) * 200}px`);
-                h.style.setProperty('--rot', `${(Math.random() - 0.5) * 180}deg`);
-                document.body.appendChild(h);
-                setTimeout(() => h.remove(), 1000);
+        // Emojilerin Matematiksel Saçılması (Patlama Efekti)
+        function explodeHearts(x, y, isGoldMode = false) {
+            const emojis = isGoldMode ? ['✨', '⭐', '🌟', '💫'] : ['💙', '💛', '💖', '🦋']; 
+            const particleCount = isGoldMode ? 14 : 9; // Yıldız yakalandığında patlama daha büyük
+            
+            for(let i = 0; i < particleCount; i++) {
+                const p = document.createElement('div');
+                p.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+                p.className = 'heart-particle';
+                p.style.left = x + 'px'; p.style.top = y + 'px';
+                
+                // Fiziksel hesaplama: Radyan cinsinden açı ve rastgele hız
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = Math.random() * 160 + 100;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                const rot = (Math.random() - 0.5) * 360; 
+                
+                p.style.setProperty('--tx', `${tx}px`);
+                p.style.setProperty('--ty', `${ty}px`);
+                p.style.setProperty('--rot', `${rot}deg`);
+                
+                document.body.appendChild(p);
+                setTimeout(() => { if(document.body.contains(p)) p.remove(); }, 1000);
             }
         }
 
-        // --- ANA MESAJ ANİMASYONU ---
-        let isAnimating = false;
-        const messages = {
-            1: "Klimt bu tabloyu çizerken dünyanın en güzel altın sarısını kullandı... Ama sanırım o mavi bakışlarına hiç denk gelmemişti.",
-            2: "Tarihin en ünlü eserleri altın yaldızlarla işlenmiş olabilir, ama bence o mavi gözlerin hiçbir tabloya sığmayacak kadar güzel..."
-        };
-
-        function typeWriter(text, i, elementId) {
-            if (i < text.length) {
-                document.getElementById(elementId).innerHTML = text.substring(0, i + 1);
-                setTimeout(() => typeWriter(text, i + 1, elementId), 45); 
+        /* ==========================================================================
+           BÖLÜM 10: FİNAL HİKAYE VE DAKTİLO (TYPEWRITER) MOTORU
+           ========================================================================== */
+        function typeWriterEffect(text, index, element, callback) {
+            if (index === 0) element.innerHTML = '<span class="cursor-blink"></span>';
+            
+            if (index < text.length) {
+                element.innerHTML = text.substring(0, index + 1) + '<span class="cursor-blink"></span>';
+                setTimeout(() => typeWriterEffect(text, index + 1, element, callback), CONFIG.timings.typewriterSpeed); 
+            } else {
+                if(callback) callback();
             }
         }
 
+        // Ana Butonların (İyi / Çok İyi) Tetikleyicisi
         function triggerMagic(type, e) {
             e.stopPropagation();
-            if(isAnimating) return;
-            isAnimating = true;
-            playMusic();
+            if(isAppActive) return;
+            isAppActive = true;
+            forcePlayMusic();
 
-            const cardWrapper = document.getElementById('main-card-wrapper');
-            const bigName = document.getElementById('big-name');
-            const finalMessage = document.getElementById('final-message');
+            // Sahnede ne varsa gizle
+            els.cardWrap.classList.add('hide');
+            els.timeLock.style.display = 'none';
+            els.blueStar.style.display = 'none';
+            els.typewriter.innerHTML = '';
             
-            cardWrapper.classList.add('hide');
-            finalMessage.innerHTML = '';
-
+            // Ortam kararır, sinematik etki
+            els.bg.style.filter = "brightness(0.4)";
+            
             setTimeout(() => {
-                bigName.classList.add('show');
-                setTimeout(() => { typeWriter(messages[type], 0, 'final-message'); }, 1200);
+                els.giantName.classList.add('show');
+                
+                setTimeout(() => {
+                    const message = type == "1" ? CONFIG.texts.msg1 : CONFIG.texts.msg2;
+                    typeWriterEffect(message, 0, els.typewriter, () => {
+                        // Mesaj bittikten 8 saniye sonra sistemi eski haline döndür
+                        setTimeout(resetMagicScene, 8000);
+                    });
+                }, 1500);
             }, 600);
+        }
 
+        function resetMagicScene() {
+            els.giantName.classList.remove('show');
+            els.typewriter.innerHTML = '';
+            els.bg.style.filter = ""; // Parlaklık normale döner
+            
             setTimeout(() => {
-                bigName.classList.remove('show');
-                finalMessage.innerHTML = '';
-                setTimeout(() => { cardWrapper.classList.remove('hide'); isAnimating = false; }, 1500);
-            }, 12000);
+                els.cardWrap.classList.remove('hide');
+                els.timeLock.style.display = 'block';
+                isAppActive = false;
+            }, 2000);
+        }
+
+        /* ==========================================================================
+           BÖLÜM 11: PROFESYONEL HTML5 CANVAS MOTORU (YAPAY ZEKA YILDIZ AĞI)
+           Arka planda süzülen, birbirine ve parmağa bağlanan parçacıkların fiziği.
+           ========================================================================== */
+        function initCanvasParticles() {
+            const ctx = els.canvas.getContext('2d');
+            let particles = [];
+            
+            // Ekran boyutları değiştiğinde Canvas'ı güncelleyen dinleyici
+            function resizeCanvas() {
+                els.canvas.width = window.innerWidth;
+                els.canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            // Parçacık Objesi Sınıflandırması (Object-Oriented Programming)
+            class ConstellationParticle {
+                constructor() {
+                    this.x = Math.random() * els.canvas.width;
+                    this.y = Math.random() * els.canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.6; // Çok yavaş sürüklenme
+                    this.vy = (Math.random() - 0.5) * 0.6;
+                    this.radius = Math.random() * 2 + 0.5;
+                    this.baseAlpha = Math.random() * 0.6 + 0.1;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+
+                    // Ekrandan çıkan yıldızı ters taraftan geri sok (Sonsuz evren etkisi)
+                    if (this.x < 0) this.x = els.canvas.width;
+                    if (this.x > els.canvas.width) this.x = 0;
+                    if (this.y < 0) this.y = els.canvas.height;
+                    if (this.y > els.canvas.height) this.y = 0;
+                }
+
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(212, 175, 55, ${this.baseAlpha})`; // Altın tozları
+                    ctx.fill();
+                }
+            }
+
+            // Evreni oluştur
+            for (let i = 0; i < CONFIG.particles.canvasStarCount; i++) {
+                particles.push(new ConstellationParticle());
+            }
+
+            // Etkileşim koordinatlarını tutucu
+            let mouse = { x: null, y: null };
+            window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+            window.addEventListener('mouseout', () => { mouse.x = null; mouse.y = null; });
+            window.addEventListener('touchmove', (e) => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; }, {passive: true});
+            window.addEventListener('touchend', () => { mouse.x = null; mouse.y = null; });
+
+            // 60FPS Oyun/Animasyon Döngüsü
+            function animateCanvasEngine() {
+                ctx.clearRect(0, 0, els.canvas.width, els.canvas.height);
+                
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                    
+                    // Yıldızları birbirine bağla (Mesafe bazlı)
+                    for (let j = i; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < CONFIG.particles.connectionDistance) {
+                            ctx.beginPath();
+                            // Yıldızlar birbirine yaklaştıkça bağ kuvvetlenir (Altın renk)
+                            ctx.strokeStyle = `rgba(212, 175, 55, ${0.25 - distance/CONFIG.particles.connectionDistance})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                    
+                    // Yıldızları fareye / parmağa bağla (Etkileşim)
+                    if (mouse.x != null) {
+                        const dx = particles[i].x - mouse.x;
+                        const dy = particles[i].y - mouse.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 160) {
+                            ctx.beginPath();
+                            // Kullanıcı ile yıldız arasındaki bağlar "Mavi" renk olur
+                            ctx.strokeStyle = `rgba(0, 240, 255, ${0.5 - distance/160})`; 
+                            ctx.lineWidth = 1;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(mouse.x, mouse.y);
+                            ctx.stroke();
+                            
+                            // Hafif manyetik çekim/itim kuvveti
+                            particles[i].x += dx * 0.005;
+                            particles[i].y += dy * 0.005;
+                        }
+                    }
+                }
+                requestAnimationFrame(animateCanvasEngine);
+            }
+            // Motoru ateşle
+            animateCanvasEngine(); 
         }
     </script>
 </body>
