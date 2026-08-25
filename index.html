@@ -120,25 +120,31 @@
         @keyframes softPulse { 0% { transform: scale(0.8); opacity: 0.7; } 100% { transform: scale(1.2); opacity: 1; } }
         @keyframes floatStar { 0% { top: 18vh; left: 15vw; } 33% { top: 70vh; left: 75vw; } 66% { top: 25vh; left: 80vw; } 100% { top: 65vh; left: 20vw; } }
 
-        /* DAMLANIN MAKBİLESİ (Şeffaf PNG Görseli, Yazısız, Yavaş ve Tatlı Süzülen Yapı) */
+        /* DAMLANIN MAKBİLESİ - Ekranda Gezinen Kusursuz Animasyon */
         .ladybug-guide {
             position: fixed; z-index: var(--z-ladybug); cursor: pointer;
             width: 55px; height: 55px;
-            background-image: url('makbile.png'); /* Projedeki şeffaf görselin */
+            background-image: url('makbile.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             filter: drop-shadow(0 0 10px rgba(255, 60, 60, 0.8));
-            animation: ladybugFlySlow 18s linear infinite, wiggleLadybug 0.6s infinite alternate ease-in-out;
+            animation-fill-mode: forwards;
+            animation-timing-function: linear;
         }
-        @keyframes wiggleLadybug {
-            0% { transform: rotate(-10deg) scale(1); }
-            100% { transform: rotate(10deg) scale(1.1); }
+        @keyframes ladybugPath1 {
+            0% { transform: translate3d(-10vw, 90vh, 0) scale(0.8); opacity: 0; }
+            15% { opacity: 1; }
+            50% { transform: translate3d(50vw, 30vh, 0) scale(1.1) rotate(15deg); }
+            85% { opacity: 1; }
+            100% { transform: translate3d(110vw, 20vh, 0) scale(1); opacity: 0; }
         }
-        @keyframes ladybugFlySlow {
-            0% { transform: translate3d(-10vw, 75vh, 0); }
-            50% { transform: translate3d(45vw, 25vh, 0); }
-            100% { transform: translate3d(110vw, 55vh, 0); }
+        @keyframes ladybugPath2 {
+            0% { transform: translate3d(110vw, 80vh, 0) scale(1); opacity: 0; }
+            15% { opacity: 1; }
+            50% { transform: translate3d(40vw, 60vh, 0) scale(0.9) rotate(-15deg); }
+            85% { opacity: 1; }
+            100% { transform: translate3d(-10vw, 15vh, 0) scale(1.1); opacity: 0; }
         }
 
         /* Kelebekler */
@@ -247,7 +253,7 @@
                     magicStarted = true; 
                     initCanvasParticles();
                     
-                    // Damlanın Makbilesi yola çıkıyor
+                    // Damlanın Makbilesi artık ekranda geziniyor
                     spawnLadybug();
                 }, 800);
             }, 1500);
@@ -259,13 +265,14 @@
             els.audio.load();
         }
 
-        /* "Damlanın Makbilesi" - Şeffaf PNG Görseliyle Gezinen Uğur Böceği */
+        /* "Damlanın Makbilesi" - Ekranda yavaşça süzülerek gezinen yapı */
         function spawnLadybug() {
             if (ladybugClicked) return;
 
             const ladybug = document.createElement('div');
             ladybug.className = 'ladybug-guide';
-            ladybug.style.top = (Math.random() * 50 + 25) + 'vh';
+            ladybug.style.animationName = Math.random() > 0.5 ? 'ladybugPath1' : 'ladybugPath2';
+            ladybug.style.animationDuration = '16s'; // Yavaş ve nazik süzülme süresi
 
             ladybug.addEventListener('pointerdown', (e) => {
                 e.preventDefault(); e.stopPropagation();
@@ -284,12 +291,13 @@
 
             document.body.appendChild(ladybug);
             
+            // Eğer tıklanmadan ekranın dışına çıkarsa temizle ve tekrar gönder
             setTimeout(() => { 
                 if (document.body.contains(ladybug) && !ladybugClicked) {
                     ladybug.remove();
-                    setTimeout(spawnLadybug, 5000); 
+                    setTimeout(spawnLadybug, 4000); 
                 }
-            }, 18000);
+            }, 16000);
         }
 
         document.addEventListener('mousemove', (e) => {
