@@ -120,10 +120,10 @@
         @keyframes softPulse { 0% { transform: scale(0.8); opacity: 0.7; } 100% { transform: scale(1.2); opacity: 1; } }
         @keyframes floatStar { 0% { top: 18vh; left: 15vw; } 33% { top: 70vh; left: 75vw; } 66% { top: 25vh; left: 80vw; } 100% { top: 65vh; left: 20vw; } }
 
-        /* DAMLANIN MAKBİLESİ - Ekranda Gezinen Kusursuz Animasyon */
+        /* DAMLANIN MAKBİLESİ - Mobilde Ekranın İçinde Gezinen Optimize Edilmiş Rota */
         .ladybug-guide {
             position: fixed; z-index: var(--z-ladybug); cursor: pointer;
-            width: 55px; height: 55px;
+            width: 50px; height: 50px;
             background-image: url('makbile.png');
             background-size: contain;
             background-repeat: no-repeat;
@@ -132,19 +132,19 @@
             animation-fill-mode: forwards;
             animation-timing-function: linear;
         }
-        @keyframes ladybugPath1 {
-            0% { transform: translate3d(-10vw, 90vh, 0) scale(0.8); opacity: 0; }
-            15% { opacity: 1; }
-            50% { transform: translate3d(50vw, 30vh, 0) scale(1.1) rotate(15deg); }
-            85% { opacity: 1; }
-            100% { transform: translate3d(110vw, 20vh, 0) scale(1); opacity: 0; }
+        @keyframes ladybugPathMobile1 {
+            0% { transform: translate3d(-10vw, 80vh, 0) scale(0.8); opacity: 0; }
+            20% { opacity: 1; }
+            50% { transform: translate3d(45vw, 40vh, 0) scale(1.1) rotate(10deg); }
+            80% { opacity: 1; }
+            100% { transform: translate3d(100vw, 30vh, 0) scale(1); opacity: 0; }
         }
-        @keyframes ladybugPath2 {
-            0% { transform: translate3d(110vw, 80vh, 0) scale(1); opacity: 0; }
-            15% { opacity: 1; }
-            50% { transform: translate3d(40vw, 60vh, 0) scale(0.9) rotate(-15deg); }
-            85% { opacity: 1; }
-            100% { transform: translate3d(-10vw, 15vh, 0) scale(1.1); opacity: 0; }
+        @keyframes ladybugPathMobile2 {
+            0% { transform: translate3d(100vw, 70vh, 0) scale(1); opacity: 0; }
+            20% { opacity: 1; }
+            50% { transform: translate3d(35vw, 50vh, 0) scale(0.9) rotate(-10deg); }
+            80% { opacity: 1; }
+            100% { transform: translate3d(-10vw, 25vh, 0) scale(1.1); opacity: 0; }
         }
 
         /* Kelebekler */
@@ -253,7 +253,7 @@
                     magicStarted = true; 
                     initCanvasParticles();
                     
-                    // Damlanın Makbilesi artık ekranda geziniyor
+                    // Damlanın Makbilesi mobila özel rotayla yola çıkıyor
                     spawnLadybug();
                 }, 800);
             }, 1500);
@@ -265,14 +265,16 @@
             els.audio.load();
         }
 
-        /* "Damlanın Makbilesi" - Ekranda yavaşça süzülerek gezinen yapı */
+        /* "Damlanın Makbilesi" - Mobil Uyumlu ve Görünür Rota */
         function spawnLadybug() {
             if (ladybugClicked) return;
 
             const ladybug = document.createElement('div');
             ladybug.className = 'ladybug-guide';
-            ladybug.style.animationName = Math.random() > 0.5 ? 'ladybugPath1' : 'ladybugPath2';
-            ladybug.style.animationDuration = '16s'; // Yavaş ve nazik süzülme süresi
+            ladybug.style.animationName = Math.random() > 0.5 ? 'ladybugPathMobile1' : 'ladybugPathMobile2';
+            ladybug.style.animationDuration = '18s'; // Nazik ve rahat yakalanabilir hız
+
+            ladybug.style.top = (Math.random() * 40 + 30) + 'vh'; // Ekranın ortalarında gezinsin
 
             ladybug.addEventListener('pointerdown', (e) => {
                 e.preventDefault(); e.stopPropagation();
@@ -291,13 +293,12 @@
 
             document.body.appendChild(ladybug);
             
-            // Eğer tıklanmadan ekranın dışına çıkarsa temizle ve tekrar gönder
             setTimeout(() => { 
                 if (document.body.contains(ladybug) && !ladybugClicked) {
                     ladybug.remove();
                     setTimeout(spawnLadybug, 4000); 
                 }
-            }, 16000);
+            }, 18000);
         }
 
         document.addEventListener('mousemove', (e) => {
@@ -416,7 +417,7 @@
                 p.style.setProperty('--ty', `${Math.sin(angle) * velocity}px`); 
                 p.style.setProperty('--rot', `${(Math.random() - 0.5) * 720}deg`);
                 document.body.appendChild(p); 
-                setTimeout(() => { if(document.body.contains(p)) p.remove(); }, 1000);
+                setTimeout(() => { if(v.contains(p)) p.remove(); }, 1000);
             }
         }
 
