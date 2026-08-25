@@ -2,216 +2,122 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Merhaba Damla</title>
-    <!-- Sanatsal ve zarif yazı tipleri -->
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Playfair Display', serif; }
 
         body {
-            background-color: #0c0804;
-            height: 100vh;
+            background-color: #050301; height: 100vh;
             display: flex; justify-content: center; align-items: center;
-            overflow: hidden;
-            color: #fff;
-            perspective: 1000px;
-            touch-action: manipulation;
+            overflow: hidden; color: #fff; perspective: 1000px;
+            touch-action: none; /* Kaydırma izleri için kilit */
+            -webkit-user-select: none; user-select: none;
         }
 
-        /* 1. YENİLİK: Nefes Alan ve Yakınlaşan Tablo */
+        /* DAHA PARLAK TABLO */
         .art-background {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(12, 8, 4, 0.7), rgba(26, 17, 5, 0.85)), 
+            /* Filtre çok daha aydınlık (saydam) hale getirildi */
+            background: linear-gradient(rgba(20, 10, 0, 0.15), rgba(30, 15, 0, 0.3)), 
                         url('https://upload.wikimedia.org/wikipedia/commons/4/40/The_Kiss_-_Gustav_Klimt_-_Google_Cultural_Institute.jpg');
             background-size: cover; background-position: center 20%;
             z-index: 0;
-            /* Hem hareket eder hem de parlaklığı azalıp artarak nefes alır */
-            animation: slowPan 30s infinite alternate ease-in-out, breathe 5s infinite alternate ease-in-out;
+            animation: slowPan 30s infinite alternate ease-in-out, breathe 6s infinite alternate ease-in-out;
         }
 
-        @keyframes slowPan {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.08); }
-        }
+        @keyframes slowPan { 0% { transform: scale(1); } 100% { transform: scale(1.08); } }
+        /* Parlaklık değerleri artırıldı */
+        @keyframes breathe { 0% { filter: brightness(1) contrast(1.05); } 100% { filter: brightness(1.3) contrast(1.15); } }
 
-        @keyframes breathe {
-            0% { filter: brightness(0.8) contrast(1.1); }
-            100% { filter: brightness(1.2) contrast(1.2); }
-        }
-
-        /* Ana Kart */
+        /* Kart */
         .card-wrapper { position: relative; z-index: 10; perspective: 1000px; }
-
         .card {
-            background: rgba(20, 15, 10, 0.65); backdrop-filter: blur(8px);
-            border: 1px solid rgba(212, 175, 55, 0.3);
+            background: rgba(15, 10, 5, 0.55); backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.4);
             padding: 45px 30px; border-radius: 12px; text-align: center;
             max-width: 420px; width: 90vw;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(212, 175, 55, 0.15);
-            transition: transform 0.1s ease, opacity 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7), 0 0 25px rgba(212, 175, 55, 0.2);
+            transition: transform 0.1s ease, opacity 0.8s;
         }
+        .card-wrapper.hide .card { transform: scale(0.6) translateY(80px) rotateX(30deg) !important; opacity: 0; pointer-events: none; }
 
-        .card-wrapper.hide .card {
-            transform: scale(0.6) translateY(80px) rotateX(30deg) !important;
-            opacity: 0; pointer-events: none;
-        }
-
-        h1 {
-            font-size: 28px; margin-bottom: 15px; color: #d4af37;
-            font-weight: 600; letter-spacing: 2px;
-            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.4);
-        }
-
-        p.message {
-            font-size: 15px; line-height: 1.7; margin-bottom: 35px;
-            color: #e8dcc4; font-style: italic;
-        }
-
-        /* Butonlar */
+        h1 { font-size: 28px; margin-bottom: 15px; color: #ffd700; font-weight: 600; text-shadow: 0 2px 10px rgba(255, 215, 0, 0.5); }
+        p.message { font-size: 15px; line-height: 1.7; margin-bottom: 35px; color: #fdf5e6; font-style: italic; }
+        
         .button-group { display: flex; gap: 15px; justify-content: center; }
-
         button {
-            padding: 12px 25px; background: transparent;
-            border: 1px solid #d4af37; color: #d4af37;
-            border-radius: 4px; font-size: 15px; font-weight: 600;
-            cursor: pointer; transition: all 0.4s ease;
-            position: relative; overflow: hidden;
+            padding: 12px 25px; background: transparent; border: 1px solid #d4af37; color: #d4af37;
+            border-radius: 4px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.4s ease;
         }
-
         button:active { transform: translateY(2px); }
 
-        /* Dev İsim & Mesaj */
-        #magic-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 20;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-        }
-
-        #big-name {
-            font-family: 'Great Vibes', cursive; font-size: 6rem; color: #d4af37;
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
-            opacity: 0; transform: scale(0.85); transition: all 1.8s ease;
-        }
+        /* Yazı Konteyneri */
+        #magic-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        #big-name { font-family: 'Great Vibes', cursive; font-size: 6rem; color: #ffd700; text-shadow: 0 0 25px rgba(255, 215, 0, 0.7); opacity: 0; transform: scale(0.85); transition: all 1.8s ease; }
         #big-name.show { opacity: 1; transform: scale(1); }
+        #final-message { margin-top: 25px; font-size: 1.3rem; color: #fff; text-align: center; max-width: 90%; min-height: 80px; font-style: italic; text-shadow: 0 2px 10px #000; }
 
-        #final-message {
-            margin-top: 25px; font-size: 1.2rem; color: #fdf5e6;
-            text-align: center; max-width: 90%; min-height: 80px; font-style: italic;
-        }
+        /* Etkileşim Efektleri */
+        .ripple { position: fixed; border: 2px solid rgba(0, 195, 255, 0.6); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); animation: rippleAnim 1s ease-out forwards; z-index: 15; box-shadow: 0 0 15px rgba(0, 195, 255, 0.4) inset; }
+        @keyframes rippleAnim { 0% { width: 0; height: 0; opacity: 1; border-width: 3px; } 100% { width: 140px; height: 140px; opacity: 0; border-width: 1px; } }
 
-        /* 2. YENİLİK: Su Damlası (Ripple) Efekti */
-        .ripple {
-            position: fixed;
-            border: 2px solid rgba(0, 195, 255, 0.5); /* Mavi göz rengi */
-            border-radius: 50%;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            animation: rippleAnim 1s ease-out forwards;
-            z-index: 15;
-            box-shadow: 0 0 10px rgba(0, 195, 255, 0.3) inset;
-        }
+        .brush-trail { position: fixed; width: 8px; height: 8px; background: #ffd700; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); z-index: 14; box-shadow: 0 0 10px #ffd700; animation: fadeTrail 0.8s ease-out forwards; }
+        @keyframes fadeTrail { 0% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); } }
 
-        @keyframes rippleAnim {
-            0% { width: 0; height: 0; opacity: 1; border-width: 3px; }
-            100% { width: 120px; height: 120px; opacity: 0; border-width: 1px; }
-        }
-
-        /* 3. YENİLİK: Zaman Kilitli Sır Kutu */
+        /* Yeni Zaman Kilidi (Kum Saati / Hilal) */
         #secret-lock {
-            position: fixed; bottom: 25px; right: 25px;
-            font-size: 24px; opacity: 0.4; cursor: pointer; z-index: 50;
-            transition: all 0.3s; animation: pulseLock 2s infinite;
-            -webkit-tap-highlight-color: transparent;
+            position: fixed; bottom: 25px; right: 25px; font-size: 30px; opacity: 0.6; cursor: pointer;
+            z-index: 50; transition: all 0.5s; animation: floatLock 3s infinite ease-in-out;
+            -webkit-tap-highlight-color: transparent; filter: drop-shadow(0 0 10px #d4af37);
         }
-        #secret-lock:hover, #secret-lock:active { opacity: 1; transform: scale(1.2); }
+        @keyframes floatLock { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.1); } }
+
+        /* Gizli Mavi Yıldız */
+        #hidden-blue-star {
+            position: fixed; top: 15%; left: 20%; width: 12px; height: 12px;
+            background: #00f0ff; border-radius: 50%; z-index: 5; cursor: pointer;
+            box-shadow: 0 0 15px #00f0ff; animation: pulseBlue 3s infinite; opacity: 0.4;
+        }
+        @keyframes pulseBlue { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.5); } }
+
+        /* Kayan Yıldız (10 Saniyede Bir) */
+        .interactive-star { position: fixed; top: -50px; right: -50px; width: 80px; height: 80px; z-index: 200; cursor: pointer; animation: starShoot 8s linear forwards; -webkit-tap-highlight-color: transparent; }
+        .interactive-star::after { content: ''; position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: #fff; box-shadow: 0 0 15px #fff, 0 0 30px #d4af37; border-radius: 50%; transform: translate(-50%, -50%); }
+        .interactive-star::before { content: ''; position: absolute; top: 50%; right: 50%; width: 120px; height: 2px; background: linear-gradient(270deg, rgba(212, 175, 55, 1), transparent); transform-origin: right; transform: translateY(-50%) rotate(25deg); }
+        @keyframes starShoot { 0% { transform: translate(0, 0); opacity: 1; } 85% { opacity: 1; } 100% { transform: translate(-120vw, 120vh); opacity: 0; } }
+
+        .butterfly { position: fixed; font-size: 35px; z-index: 50; cursor: pointer; animation: flyUp linear forwards; filter: drop-shadow(0 0 8px rgba(0, 195, 255, 0.6)); -webkit-tap-highlight-color: transparent; }
+        @keyframes flyUp { 0% { transform: translateY(110vh) rotate(0deg) scale(1); opacity: 1; } 50% { transform: translateY(40vh) translateX(-20px) rotate(-10deg) scale(1); } 100% { transform: translateY(-20vh) rotate(0deg) scale(1); opacity: 0; } }
         
-        @keyframes pulseLock {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
+        .heart-pop { position: fixed; font-size: 24px; z-index: 60; pointer-events: none; animation: popOut 1s ease-out forwards; }
+        @keyframes popOut { 0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; } 100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot)); opacity: 0; } }
 
-        /* Zarif Uyarı / Bildirim Ekranı (Toast) */
-        #custom-toast {
-            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
-            background: rgba(20, 15, 10, 0.95); border: 1px solid #d4af37;
-            color: #d4af37; padding: 12px 25px; border-radius: 30px;
-            font-size: 14px; font-style: italic; z-index: 1000;
-            transition: bottom 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.7); text-align: center;
-            width: max-content; max-width: 90vw;
-        }
+        /* Bildirim Toast */
+        #custom-toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: rgba(10, 5, 2, 0.95); border: 1px solid #d4af37; color: #ffd700; padding: 15px 25px; border-radius: 30px; font-size: 15px; font-style: italic; z-index: 1000; transition: bottom 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55); box-shadow: 0 5px 25px rgba(0,0,0,0.8); text-align: center; width: max-content; max-width: 90vw; pointer-events: none;}
         #custom-toast.show { bottom: 40px; }
-
-   /* 4. YENİLİK: Kayan Yıldız Efekti */
-        .interactive-star {
-            position: fixed; top: -50px; right: -50px;
-            width: 80px; height: 80px; z-index: 200; cursor: pointer;
-            /* Süreyi 2.5 saniyeden 8 saniyeye çıkardık (Çok daha yavaş kaysın diye) */
-            animation: starShoot 8s linear forwards;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .interactive-star::after {
-            content: ''; position: absolute; top: 50%; left: 50%;
-            width: 6px; height: 6px; background: #fff;
-            box-shadow: 0 0 15px #fff, 0 0 30px #d4af37; border-radius: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .interactive-star::before {
-            content: ''; position: absolute; top: 50%; right: 50%;
-            width: 120px; height: 2px;
-            background: linear-gradient(270deg, rgba(212, 175, 55, 1), transparent);
-            transform-origin: right; transform: translateY(-50%) rotate(25deg);
-        }
-
-        @keyframes starShoot {
-            0% { transform: translate(0, 0); opacity: 1; }
-            85% { opacity: 1; } /* Yıldız ekranda daha uzun süre parlak kalır */
-            100% { transform: translate(-120vw, 120vh); opacity: 0; }
-        }
-        /* Uçan Kelebekler ve Kalpler */
-        .butterfly {
-            position: fixed; font-size: 35px; z-index: 50; cursor: pointer;
-            animation: flyUp linear forwards; filter: drop-shadow(0 0 8px rgba(0, 195, 255, 0.6));
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        @keyframes flyUp {
-            0% { transform: translateY(110vh) rotate(0deg) scale(1); opacity: 1; }
-            50% { transform: translateY(40vh) translateX(-20px) rotate(-10deg) scale(1); }
-            100% { transform: translateY(-20vh) rotate(0deg) scale(1); opacity: 0; }
-        }
-
-        .heart-pop {
-            position: fixed; font-size: 24px; z-index: 60;
-            pointer-events: none; animation: popOut 1s ease-out forwards;
-        }
-
-        @keyframes popOut {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-            100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot)); opacity: 0; }
-        }
     </style>
 </head>
 <body>
 
-    <!-- Müzik -->
+    <!-- Dinamik Müzik Çalar -->
     <audio id="bg-music" loop>
-        <source src="billabong.mp3" type="audio/mpeg">
+        <source id="music-source" src="" type="audio/mpeg">
     </audio>
 
-    <div class="art-background"></div>
+    <div class="art-background" id="bg-art"></div>
+    
+    <!-- Gizli Mavi Yıldız -->
+    <div id="hidden-blue-star" onclick="catchBlueStar(event)"></div>
 
     <div id="magic-container">
         <div id="big-name">Damla</div>
         <div id="final-message"></div>
     </div>
 
-    <!-- Gizli Saat Kilidi -->
-    <div id="secret-lock" onclick="checkTimeSecret(event)">🔒</div>
-
-    <!-- Bildirim Ekranı -->
+    <!-- Zaman Kilidi -->
+    <div id="secret-lock" onclick="handleLockClick(event)">⏳</div>
     <div id="custom-toast"></div>
 
     <div class="card-wrapper" id="main-card-wrapper">
@@ -227,12 +133,7 @@
     </div>
 
     <script>
-        const messages = {
-            1: "Klimt bu tabloyu çizerken dünyanın en güzel altın sarısını kullandı... Ama sanırım o mavi bakışlarına hiç denk gelmemişti.",
-            2: "Tarihin en ünlü eserleri altın yaldızlarla işlenmiş olabilir, ama bence o mavi gözlerin hiçbir tabloya sığmayacak kadar güzel..."
-        };
-
-        // --- Ortak Toast (Bildirim) Fonksiyonu ---
+        // --- TOAST BİLDİRİM ---
         let toastTimeout;
         function showToast(msg, duration = 3000) {
             const toast = document.getElementById('custom-toast');
@@ -242,130 +143,189 @@
             toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, duration);
         }
 
-        // --- Su Damlası (Ripple) Efekti ---
+        // --- ZAMANA GÖRE DİNAMİK MÜZİK ---
+        function setDynamicMusic() {
+            const source = document.getElementById('music-source');
+            const hour = new Date().getHours();
+            
+            if (hour >= 19 || hour < 1) {
+                // 19:00 - 01:00 arası
+                source.src = "sarki_aksam.mp3";
+            } else if (hour >= 1 && hour < 14) {
+                // 01:00 - 14:00 arası
+                source.src = "sarki_gece.mp3"; 
+            } else {
+                // 14:00 - 19:00 arası
+                source.src = "sarki_gunduz.mp3";
+            }
+            document.getElementById('bg-music').load();
+        }
+        setDynamicMusic();
+
+        function playMusic() {
+            const music = document.getElementById('bg-music');
+            if (music.paused) music.play().catch(e => console.log("Müzik engeli"));
+        }
+
+        // --- ZAMAN KİLİDİ (AKŞAM 7'DEN SONRA) ---
+        function updateLockIcon() {
+            const hour = new Date().getHours();
+            const lock = document.getElementById('secret-lock');
+            // 19:00'dan sonra veya gece yarısı (00:00 - 06:00) açılsın
+            if (hour >= 19 || hour < 6) {
+                lock.innerHTML = '🌙'; // Açık hali Hilal
+            } else {
+                lock.innerHTML = '⏳'; // Kapalı hali Kum Saati
+            }
+        }
+        updateLockIcon();
+
+        function handleLockClick(e) {
+            e.stopPropagation();
+            const hour = new Date().getHours();
+            if (hour >= 19 || hour < 6) {
+                showToast("Bu gece o mavi gözlerin her zamankinden daha güzel parlıyor... 💙", 5000);
+            } else {
+                showToast("Güneşin batmasını bekle, asıl sürpriz akşam 7'den sonra... ⏳", 4000);
+            }
+        }
+
+        // --- MELEK SAATLERİ (11:11, 22:22 vb.) ---
+        setInterval(() => {
+            const d = new Date();
+            const h = d.getHours();
+            const m = d.getMinutes();
+            if ((h === 11 && m === 11) || (h === 22 && m === 22) || (h === 0 && m === 0)) {
+                showToast(`Saat şu an ${h}:${m < 10 ? '0'+m : m}... Acaba aklından ne geçiyordu? ✨`, 6000);
+            }
+        }, 60000); // Her dakika kontrol et
+
+        // --- GİZLİ MAVİ YILDIZ ---
+        function catchBlueStar(e) {
+            e.stopPropagation();
+            e.target.style.display = 'none'; // Kaybolsun
+            showToast("Milyonlarca yıldız arasında sadece biri maviydi... Tıpkı o gözler gibi. 💙", 6000);
+            createHearts(e.clientX, e.clientY, false);
+            playMusic();
+        }
+
+        // --- UZUN BASMA (KALP ATIŞI) & FIRÇA İZİ ---
+        let pressTimer;
+        let isDrawing = false;
+
+        function startPress(e) {
+            isDrawing = true;
+            createRipple(e);
+            pressTimer = setTimeout(() => {
+                if (navigator.vibrate) navigator.vibrate([100, 100, 100]); // Kalp atışı titreşimi
+                showToast("İşte tam olarak bu kadar özelsin... 💙", 5000);
+                document.getElementById('bg-art').style.filter = "brightness(0.5)"; // Arka plan kararır
+                setTimeout(() => document.getElementById('bg-art').style.filter = "", 2000);
+            }, 2500); // 2.5 saniye basılı tutarsa
+        }
+
+        function cancelPress() {
+            clearTimeout(pressTimer);
+            isDrawing = false;
+        }
+
+        document.addEventListener('mousedown', startPress);
+        document.addEventListener('mouseup', cancelPress);
+        document.addEventListener('touchstart', startPress, {passive: true});
+        document.addEventListener('touchend', cancelPress);
+
+        // Klimt Fırça İzi
+        document.addEventListener('mousemove', drawTrail);
+        document.addEventListener('touchmove', (e) => { cancelPress(); drawTrail(e); }, {passive: true});
+
+        function drawTrail(e) {
+            if(!isDrawing && e.type === 'mousemove') return; // Sadece basılıyken çizer (mobilde dokunurken)
+            const trail = document.createElement('div');
+            trail.className = 'brush-trail';
+            let x = e.clientX || (e.touches && e.touches[0].clientX);
+            let y = e.clientY || (e.touches && e.touches[0].clientY);
+            trail.style.left = x + 'px';
+            trail.style.top = y + 'px';
+            document.body.appendChild(trail);
+            setTimeout(() => trail.remove(), 800);
+        }
+
         function createRipple(e) {
             const ripple = document.createElement('div');
             ripple.classList.add('ripple');
-            
-            let x, y;
-            if (e.type === 'touchstart' || e.type === 'touchmove') {
-                x = e.touches[0].clientX;
-                y = e.touches[0].clientY;
-            } else {
-                x = e.clientX;
-                y = e.clientY;
-            }
-
-            ripple.style.left = `${x}px`;
-            ripple.style.top = `${y}px`;
+            let x = e.clientX || (e.touches && e.touches[0].clientX);
+            let y = e.clientY || (e.touches && e.touches[0].clientY);
+            ripple.style.left = `${x}px`; ripple.style.top = `${y}px`;
             document.body.appendChild(ripple);
-            
             setTimeout(() => { ripple.remove(); }, 1000);
         }
+
+        // --- KAYAN YILDIZ (10 SANİYEDE BİR & 2 AŞAMALI MESAJ) ---
+        let starCatchCount = 0;
         
-        // Ekrana her dokunduğunda damla efekti çıksın
-        document.addEventListener('mousedown', createRipple);
-        document.addEventListener('touchstart', createRipple, {passive: true});
-
-        // --- Zaman Kilitli Sır (Gece 00:00 Şartı) ---
-        function checkTimeSecret(e) {
-            e.stopPropagation(); // Damla efektini ezmesin diye
-            const hour = new Date().getHours();
-            
-            // Gece 00:00 ile Sabah 06:00 arası açılır
-            if (hour === 0 || hour < 6) {
-                showToast("Bugün o mavi gözlerin yeterince yoruldu, tatlı rüyalar... 💙", 4500);
-            } else {
-                showToast("Biraz sabırsızız galiba :) Doğru zamanı (00:00) bekle... ⏳", 3500);
-            }
-        }
-
-        // --- Kayan Yıldız (5-6 Saniye Sonra Çıkar) ---
-        setTimeout(() => {
+        setInterval(() => {
             const star = document.createElement('div');
             star.className = 'interactive-star';
             
-           // Yıldıza tıklandığında
             const catchStar = (e) => {
                 e.stopPropagation();
                 star.remove();
+                starCatchCount++;
                 
-                // Mesaj güncellendi ve ekranda kalma süresi 7000 milisaniye (7 saniye) yapıldı
-                showToast("Kayan yıldızı yakaladın! Kim bilir, belki de tuttuğun dilek çoktan gerçekleşmiştir... ✨", 7000);
+                if (starCatchCount === 1) {
+                    showToast("Hemen içinden bir dilek tut... ✨", 6000);
+                } else {
+                    showToast("Kim bilir, belki de o tuttuğun dilek çoktan kabul olmuştur... 💙", 7000);
+                }
                 
-                playMusic(); // Şarkıyı başlatır
-                // Dokunulan yerde yıldız patlaması
-                createHearts(e.clientX || e.touches[0].clientX, e.clientY || e.touches[0].clientY, true);
+                playMusic();
+                createHearts(e.clientX || (e.touches && e.touches[0].clientX), e.clientY || (e.touches && e.touches[0].clientY), true);
             };
 
             star.addEventListener('touchstart', catchStar, {passive: false});
             star.addEventListener('mousedown', catchStar);
             document.body.appendChild(star);
+        }, 10000); // Tam 10 saniyede bir yeni yıldız üretir
 
-            // Çıkmadan hemen önce ipucu ver
-            showToast("Hızlı ol, kayan yıldıza dokun! 🌠", 2500);
-        }, 5500); // 5.5 saniye sonra tetiklenir
-
-
-        // --- Kelebek ve Müzik Kodları (Eski Kodların Aynısı) ---
-        function playMusic() {
-            const music = document.getElementById('bg-music');
-            if (music.paused) music.play().catch(e => console.log("Otomatik oynatma engeli."));
-        }
-
+        // --- UÇAN KELEBEKLER ---
         setInterval(spawnButterfly, 1500);
 
         function spawnButterfly() {
             const b = document.createElement('div');
-            b.innerHTML = '🦋';
-            b.className = 'butterfly';
+            b.innerHTML = '🦋'; b.className = 'butterfly';
             b.style.left = Math.random() * 85 + 'vw';
             b.style.animationDuration = (Math.random() * 4 + 4) + 's'; 
-            
-            b.addEventListener('touchstart', (e) => catchButterfly(e, b), { passive: false });
-            b.addEventListener('mousedown', (e) => catchButterfly(e, b));
-            
+            b.addEventListener('touchstart', (e) => {
+                e.preventDefault(); e.stopPropagation();
+                b.remove(); playMusic();
+                createHearts(e.touches[0].clientX, e.touches[0].clientY, false);
+            }, { passive: false });
             document.body.appendChild(b);
             setTimeout(() => b.remove(), 9000); 
         }
 
-        function catchButterfly(e, butterflyElement) {
-            e.preventDefault();
-            e.stopPropagation(); // Arkadaki damla efektini durdurur
-            playMusic(); 
-
-            let x = (e.type === 'touchstart') ? e.touches[0].clientX : e.clientX;
-            let y = (e.type === 'touchstart') ? e.touches[0].clientY : e.clientY;
-
-            butterflyElement.remove();
-            createHearts(x, y);
-        }
-
         function createHearts(x, y, isGold = false) {
-            // Eğer yıldızdan geliyorsa altın/beyaz yıldızlar atsın, kelebekten geliyorsa mavi kalpler
             const heartColors = isGold ? ['✨', '⭐', '🌟'] : ['💙', '💛', '💖', '💙']; 
-            
             for(let i = 0; i < 8; i++) {
                 const h = document.createElement('div');
                 h.innerHTML = heartColors[Math.floor(Math.random() * heartColors.length)];
                 h.className = 'heart-pop';
-                h.style.left = x + 'px';
-                h.style.top = y + 'px';
-                
-                const tx = (Math.random() - 0.5) * 200; 
-                const ty = (Math.random() - 1) * 200;   
-                const rot = (Math.random() - 0.5) * 180; 
-                
-                h.style.setProperty('--tx', `${tx}px`);
-                h.style.setProperty('--ty', `${ty}px`);
-                h.style.setProperty('--rot', `${rot}deg`);
-                
+                h.style.left = x + 'px'; h.style.top = y + 'px';
+                h.style.setProperty('--tx', `${(Math.random() - 0.5) * 200}px`);
+                h.style.setProperty('--ty', `${(Math.random() - 1) * 200}px`);
+                h.style.setProperty('--rot', `${(Math.random() - 0.5) * 180}deg`);
                 document.body.appendChild(h);
                 setTimeout(() => h.remove(), 1000);
             }
         }
 
+        // --- ANA MESAJ ANİMASYONU ---
         let isAnimating = false;
+        const messages = {
+            1: "Klimt bu tabloyu çizerken dünyanın en güzel altın sarısını kullandı... Ama sanırım o mavi bakışlarına hiç denk gelmemişti.",
+            2: "Tarihin en ünlü eserleri altın yaldızlarla işlenmiş olabilir, ama bence o mavi gözlerin hiçbir tabloya sığmayacak kadar güzel..."
+        };
+
         function typeWriter(text, i, elementId) {
             if (i < text.length) {
                 document.getElementById(elementId).innerHTML = text.substring(0, i + 1);
@@ -388,18 +348,13 @@
 
             setTimeout(() => {
                 bigName.classList.add('show');
-                setTimeout(() => {
-                    typeWriter(messages[type], 0, 'final-message');
-                }, 1200);
+                setTimeout(() => { typeWriter(messages[type], 0, 'final-message'); }, 1200);
             }, 600);
 
             setTimeout(() => {
                 bigName.classList.remove('show');
                 finalMessage.innerHTML = '';
-                setTimeout(() => {
-                    cardWrapper.classList.remove('hide');
-                    isAnimating = false;
-                }, 1500);
+                setTimeout(() => { cardWrapper.classList.remove('hide'); isAnimating = false; }, 1500);
             }, 12000);
         }
     </script>
