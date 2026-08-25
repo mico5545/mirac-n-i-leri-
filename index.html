@@ -276,9 +276,18 @@
 
         function setMusicByTime() {
             const hour = new Date().getHours();
-            if (hour >= 19 || hour < 1) els.audioSrc.src = CONFIG.audio.aksam;
-            else if (hour >= 1 && hour < 14) els.audioSrc.src = CONFIG.audio.gece;
-            else els.audioSrc.src = CONFIG.audio.gunduz;
+            let currentSong = "";
+            
+            if (hour >= 19 || hour < 1) {
+                currentSong = CONFIG.audio.aksam;
+            } else if (hour >= 1 && hour < 14) {
+                currentSong = CONFIG.audio.gece;
+            } else {
+                currentSong = CONFIG.audio.gunduz;
+            }
+            
+            // source etiketi yerine doğrudan audio elementinin kendisine src veriyoruz (Mobil Tarayıcı Bug'ı için kesin çözüm)
+            els.audio.src = currentSong;
             els.audio.load();
         }
 
